@@ -56,7 +56,7 @@ class MultilabelPerceptron(Predictor):
 
 if __name__ == "__main__":
 	from torch.utils.data import DataLoader
-	from mnist import label_set, train_data, test_data
+	from MNIST import label_set, train_data, test_data
 
 	train_dataloader = DataLoader(train_data, batch_size=10_000, shuffle=True)
 	test_dataloader = DataLoader(test_data, batch_size=500, shuffle=True)

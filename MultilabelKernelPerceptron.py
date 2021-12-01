@@ -59,7 +59,7 @@ class MultilabelKernelPerceptron(Predictor):
 
 if __name__ == "__main__":
 	from torch.utils.data import DataLoader
-	from mnist import label_set, train_data, test_data
+	from MNIST import label_set, train_data, test_data
 
 	def polynomial(a, b, c = 1., degree = 5.):
 		return torch.float_power(a @ b + c, degree)
