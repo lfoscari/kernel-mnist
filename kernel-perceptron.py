@@ -1,6 +1,7 @@
 from interface import Predictor
 from dataclasses import dataclass
 from typing import Callable
+from functools import partial
 import torch
 
 @dataclass(repr=False)
@@ -54,44 +55,17 @@ class MultilabelKernelPerceptron(Predictor):
 		test_kernel_matrix = self.kernel(x_test, x_train.T)
 		scores = [torch.sum(test_kernel_matrix * Predictor.sgn_label(self.y_train, label) * alpha, (1)) for label, alpha in enumerate(self.model)]
 		predictions = torch.max(torch.stack(scores), 0)[1]
-		return torch.sum(predictions != self.y_test) / self.x_test.shape[0]
+		return torch.sum(predictions != self.y_test) / self.y_test.shape[0]
 
 if __name__ == "__main__":
-
 	from torch.utils.data import DataLoader
-	from torchvision.transforms import ToTensor, Compose, Lambda
-	from torchvision import datasets
+	from mnist import label_set, train_data, test_data
 
 	def polynomial(a, b, c = 1., degree = 5.):
 		return torch.float_power(a @ b + c, degree)
 
-	label_set = range(10)
-
-	training_data = datasets.MNIST(
-		root="data",
-		train=True,
-		download=True,
-		transform=Compose([
-			ToTensor(),
-			Lambda(lambda x: x.reshape((-1, )))
-		])
-	)
-
-	test_data = datasets.MNIST(
-		root="data",
-		train=False,
-		download=True,
-		transform=Compose([
-			ToTensor(),
-			Lambda(lambda x: x.reshape((-1, )))
-		])
-	)
-
-	training_size = 1_000 # training_data.data.shape[0]
-	test_size = 500 # test_data.data.shape[0]
-
-	train_dataloader = DataLoader(training_data, batch_size=training_size, shuffle=True)
-	test_dataloader = DataLoader(test_data, batch_size=test_size, shuffle=True)
+	train_dataloader = DataLoader(train_data, batch_size=10_000, shuffle=True)
+	test_dataloader = DataLoader(test_data, batch_size=500, shuffle=True)
 
 	train_examples = iter(train_dataloader)
 	test_examples = iter(test_dataloader)
@@ -99,15 +73,16 @@ if __name__ == "__main__":
 	x_train, y_train = next(train_examples)
 	x_test, y_test = next(test_examples)
 
-	MKP = MultilabelKernelPerceptron(
-		polynomial,
-		set(label_set),
-		10,
-		x_train,
-		y_train,
-		x_test,
-		y_test
-	)
+	for degree in range(6):
+		MKP = MultilabelKernelPerceptron(
+			partial(polynomial, degree=degree+1),
+			set(label_set),
+			10,
+			x_train,
+			y_train,
+			x_test,
+			y_test
+		)
 
-	MKP.fit()
-	print(MKP.predict())
+		MKP.fit()
+		print("Degree", degree, "error", MKP.predict())
