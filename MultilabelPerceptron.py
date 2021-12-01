@@ -1,5 +1,6 @@
 from interface import Predictor
 from dataclasses import dataclass
+import json
 import torch
 
 @dataclass(repr=False)
@@ -11,23 +12,17 @@ class MultilabelPerceptron(Predictor):
 	x_test: torch.Tensor
 	y_test: torch.Tensor
 	model: torch.Tensor = None
+	save_file: str = None
 
-	def epoch_error(self, w, y_test_norm):
-		return torch.sum(Predictor.sgn(self.x_test @ w.T) != y_test_norm) / self.x_test.shape[0]
+	# def __epoch_error(self, w, y_test_norm):
+	# 	return torch.sum(Predictor.sgn(self.x_test @ w.T) != y_test_norm) / self.x_test.shape[0]
 
-	def fit(self):
-		self.model = torch.zeros((len(self.labels), self.x_train.shape[1]))
-
-		for label in self.labels:
-			print("-" * 5, "Training label", label)
-			self.model[label] = self.fit_label(label)
-
-	def fit_label(self, label):
+	def __fit_label(self, label):
 		w = torch.zeros(self.x_train.shape[1], dtype=self.x_train.dtype)
 		e = 0
 
 		y_train_norm = Predictor.sgn_label(self.y_train, label)
-		y_test_norm = Predictor.sgn_label(self.y_test, label)
+		# y_test_norm = Predictor.sgn_label(self.y_test, label)
 
 		while True:
 			update = False
@@ -36,8 +31,8 @@ class MultilabelPerceptron(Predictor):
 					w += label * point
 					update = True
 
-			error = self.epoch_error(w, y_test_norm)
-			print("Epoch", e, "error", float(error))
+			# error = self.__epoch_error(w, y_test_norm)
+			# print("Epoch", e, "error", float(error))
 
 			if not update:
 				print("Skipping remaining epochs")
@@ -49,10 +44,17 @@ class MultilabelPerceptron(Predictor):
 			
 		return w
 
+	def fit(self):
+		self.model = torch.zeros((len(self.labels), self.x_train.shape[1]))
+
+		for label in self.labels:
+			print("Training label", label)
+			self.model[label] = self.__fit_label(label)
+
 	def predict(self):
 		scores = self.x_test @ self.model.T
 		predictions = torch.max(scores, 1)[1]
-		return torch.sum(predictions != self.y_test) / self.y_test.shape[0]
+		return float(torch.sum(predictions != self.y_test) / self.y_test.shape[0])
 
 if __name__ == "__main__":
 	from torch.utils.data import DataLoader
@@ -67,14 +69,25 @@ if __name__ == "__main__":
 	x_train, y_train = next(train_examples)
 	x_test, y_test = next(test_examples)
 
-	MP = MultilabelPerceptron(
-		label_set,
-		10,
-		x_train,
-		y_train,
-		x_test,
-		y_test
-	)
+	results = {}
 
-	MP.fit()
-	print(MP.predict())
+	for epochs in range(10):
+		print("-" * 5, "Training", epochs, "epochs")
+		results[epochs+1] = {}
+
+		MP = MultilabelPerceptron(
+			label_set,
+			epochs+1,
+			x_train,
+			y_train,
+			x_test,
+			y_test
+		)
+
+		MP.fit()
+		results[epochs+1] = MP.predict()
+		print("[", "Error:", results[epochs+1], "]")
+
+	dest = "./results/mp.json"
+	json.dump(results, open(dest, "w"), indent=True)
+	print("Results saved in", dest)

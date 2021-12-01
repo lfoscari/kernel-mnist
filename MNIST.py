@@ -1,7 +1,7 @@
 from torchvision.transforms import ToTensor, Compose, Lambda
 from torchvision import datasets
 
-label_set = set(range(10))
+label_set = list(range(10))
 
 train_data = datasets.MNIST(
 	root="data",
