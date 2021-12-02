@@ -2,8 +2,6 @@ from sklearn.kernel_approximation import Nystroem
 from MultilabelPerceptron import *
 import torch
 
-# ERROR: the accuracy is terrible...
-
 def polynomial(a, b, c = 1., degree = 5.):
     return (a @ b + c) ** degree
 

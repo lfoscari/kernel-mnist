@@ -31,7 +31,7 @@ let myPythonPackages =
 		torchvision
 		kmeans
 		tqdm
-		# scikit-learn
+		scikit-learn
 	]); in
 
 pkgs.mkShell {

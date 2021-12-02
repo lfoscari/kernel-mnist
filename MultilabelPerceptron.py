@@ -3,6 +3,8 @@ from dataclasses import dataclass
 import json
 import torch
 
+# ERROR: the accuracy is terrible...
+
 @dataclass(repr=False)
 class MultilabelPerceptron(Predictor):
 	labels: set
@@ -12,7 +14,6 @@ class MultilabelPerceptron(Predictor):
 	x_test: torch.Tensor
 	y_test: torch.Tensor
 	model: torch.Tensor = None
-	save_file: str = None
 
 	def __fit_label(self, label):
 		w = torch.zeros(self.x_train.shape[1], dtype=self.x_train.dtype)
@@ -23,7 +24,7 @@ class MultilabelPerceptron(Predictor):
 		while True:
 			update = False
 			for point, label in zip(self.x_train, y_train_norm):
-				if label * w.dot(point) <= 0:
+				if Predictor.sgn(label * w.dot(point)) != label:
 					w += label * point
 					update = True
 
