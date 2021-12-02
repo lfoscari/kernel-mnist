@@ -49,7 +49,7 @@ class MultilabelPerceptron(Predictor):
 if __name__ == "__main__":
 	from tqdm import tqdm
 	import json
-	import time	
+	import time
 	from torch.utils.data import DataLoader
 	from MNIST import label_set, train_data, test_data
 

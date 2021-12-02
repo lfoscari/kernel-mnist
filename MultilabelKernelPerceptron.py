@@ -72,7 +72,7 @@ if __name__ == "__main__":
 	epochs_iteration = tqdm(range(1, 11))
 
 	for epochs in epochs_iteration:
-		results["epochs_amount"][epochs] = {}
+		results["epochs_amount"][epochs] = {"degree": {}}
 
 		for degree in range(1, 7):
 			epochs_iteration.set_description(f"Training with {epochs} epoch(s) and degree {degree}")
@@ -86,7 +86,7 @@ if __name__ == "__main__":
 			)
 
 			MKP.fit()
-			results["epochs_amount"][epochs][degree] = MKP.predict(x_test, y_test)
+			results["epochs_amount"][epochs]["degree"][degree] = MKP.predict(x_test, y_test)
 
 	results["training_time"] = time.time() - start
 
