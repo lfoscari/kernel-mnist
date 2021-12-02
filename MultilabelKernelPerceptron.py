@@ -18,16 +18,10 @@ class MultilabelKernelPerceptron(Predictor):
 	kernel_matrix: torch.Tensor = None
 	error: dict = None
 	save_file: str = None
-
-	# def __epoch_error(self, alpha, y_train_norm, y_test_norm):
-	# 	score = torch.sum(self.kernel(self.x_test, self.x_train.T) * y_train_norm * alpha, (1))
-	# 	return torch.sum(Predictor.sgn(score) != y_test_norm) / y_test_norm.shape[0]
-
+	
 	def __fit_label(self, label):
 		alpha = torch.zeros(self.x_train.shape[0])
-
 		y_train_norm = Predictor.sgn_label(self.y_train, label)
-		# y_test_norm = Predictor.sgn_label(self.y_test, label)
 
 		for _ in range(self.epochs):
 			update = False
@@ -37,14 +31,7 @@ class MultilabelKernelPerceptron(Predictor):
 				update = alpha_update or update
 				alpha[index] += alpha_update
 
-			# error = self.predict(alpha, y_train_norm, y_test_norm)
-			# self.error[label][e] = float(error)
-			# print("Epoch", e, "error", float(error))
-
 			if not update:
-				# print("Skipping remaining epochs")
-				# for _e in range(e + 1, self.epochs):
-				# 	self.error[label][_e] = None # error
 				break
 			
 		return alpha

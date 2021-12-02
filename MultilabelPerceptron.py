@@ -14,15 +14,11 @@ class MultilabelPerceptron(Predictor):
 	model: torch.Tensor = None
 	save_file: str = None
 
-	# def __epoch_error(self, w, y_test_norm):
-	# 	return torch.sum(Predictor.sgn(self.x_test @ w.T) != y_test_norm) / self.x_test.shape[0]
-
 	def __fit_label(self, label):
 		w = torch.zeros(self.x_train.shape[1], dtype=self.x_train.dtype)
 		e = 0
 
 		y_train_norm = Predictor.sgn_label(self.y_train, label)
-		# y_test_norm = Predictor.sgn_label(self.y_test, label)
 
 		while True:
 			update = False
@@ -30,9 +26,6 @@ class MultilabelPerceptron(Predictor):
 				if label * w.dot(point) <= 0:
 					w += label * point
 					update = True
-
-			# error = self.__epoch_error(w, y_test_norm)
-			# print("Epoch", e, "error", float(error))
 
 			if not update:
 				print("Skipping remaining epochs")
