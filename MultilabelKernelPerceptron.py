@@ -72,7 +72,7 @@ if __name__ == "__main__":
 
 	for epochs in range(10):
 		print("-" * 10, "Training", epochs, "epochs")
-		results[epochs] = {}
+		results[epochs+1] = {}
 
 		for degree in range(6):
 			print("-" * 5, "Training degree", degree+1)
