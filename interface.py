@@ -1,7 +1,6 @@
 class Predictor():
 	def fit(self): pass
-	def predict(self): pass
-	def results(self): pass
+	def predict(self, x_test, y_test): pass
 
 	@staticmethod
 	def sgn_label(a, b):

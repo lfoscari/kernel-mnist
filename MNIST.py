@@ -1,6 +1,8 @@
 from torchvision.transforms import ToTensor, Compose, Lambda
 from torchvision import datasets
 
+# TODO: find a way to remove numpy warning
+
 label_set = list(range(10))
 
 train_data = datasets.MNIST(
