@@ -69,6 +69,7 @@ if __name__ == "__main__":
 
 	for epochs in epochs_iteration:
 		epochs_iteration.set_description(f"Training with {epochs} epoch(s)")
+		epoch_training_time = time.time()
 
 		MP = MultilabelPerceptron(
 			label_set,
@@ -78,7 +79,10 @@ if __name__ == "__main__":
 		)
 
 		MP.fit()
-		results["epochs_amount"][epochs] = MP.predict(x_test, y_test)
+		results["epochs_amount"][epochs] = {
+			"error": MP.predict(x_test, y_test),
+			"time": time.time() - epoch_training_time
+		}
 
 	results["training_time"] = time.time() - start
 

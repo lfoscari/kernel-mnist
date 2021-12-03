@@ -76,6 +76,7 @@ if __name__ == "__main__":
 
 		for degree in range(1, 7):
 			epochs_iteration.set_description(f"Training with {epochs} epoch(s) and degree {degree}")
+			epoch_training_time = time.time()
 
 			MKP = MultilabelKernelPerceptron(
 				partial(polynomial, degree=degree),
@@ -86,7 +87,10 @@ if __name__ == "__main__":
 			)
 
 			MKP.fit()
-			results["epochs_amount"][epochs]["degree"][degree] = MKP.predict(x_test, y_test)
+			results["epochs_amount"][epochs]["degree"][degree] = {
+				"error": MKP.predict(x_test, y_test),
+				"time": time.time() - epoch_training_time
+			}
 
 	results["training_time"] = time.time() - start
 
