@@ -9,13 +9,13 @@ def compress(x_train, y_train):
 
 	# Sort x_train by label in y_train
 	_, indices = y_train.sort()
-	_x_train = x_train[indices]
+	x_train = x_train[indices]
 
 	# Count the occurrences of each label
 	label_amount = y_train.bincount()
 
 	# Split the training points in one of 10 buckets according to their label
-	label_split = _x_train.split(tuple(label_amount))
+	label_split = x_train.split(tuple(label_amount))
 
 	# Compute centroid set for each bucket
 	centroids = {label: None for label in label_set}
@@ -30,16 +30,15 @@ def compress(x_train, y_train):
 	# Create the new training set by joining the buckets,
 	# labeling the data and shuffleing everything
 
-	_x_train = torch.cat([c for _, c in centroids.values()])
-	_y_train = torch.cat([torch.empty(K).fill_(label) for K, label in zip(bucket_sizes, label_set)])
+	x_train = torch.cat([c for _, c in centroids.values()])
+	y_train = torch.cat([torch.empty(K).fill_(label) for K, label in zip(bucket_sizes, label_set)])
 
-	return _x_train, _y_train
+	return x_train, y_train
 
 
 if __name__ == "__main__":
 	from MultilabelKernelPerceptron import *
-	from torch.utils.data import DataLoader
-	from MNIST import label_set, train_data, test_data
+	from MNIST import label_set, batch_data_iter
 	from tqdm import tqdm
 	from functools import partial
 	import time
@@ -48,26 +47,17 @@ if __name__ == "__main__":
 	def polynomial(a, b, c = 1., degree = 5.):
 		return torch.float_power(a @ b + c, degree)
 
-	train_dataloader = DataLoader(train_data, batch_size=10_000, shuffle=True)
-	test_dataloader = DataLoader(test_data, batch_size=500, shuffle=True)
-
-	train_examples = iter(train_dataloader)
-	test_examples = iter(test_dataloader)
-
-	x_train, y_train = next(train_examples)
-	x_test, y_test = next(test_examples)
-
-	old_shape = x_train.shape
+	(x_train, y_train), (x_test, y_test) = batch_data_iter(10_000, 500)
 
 	print("K-means approximation step...")
-	start = time.time()
-	x_train, y_train = compress(x_train, y_train)
-	compression_time = time.time() - start
+	compression_time = time.time()
+	x_train_km, y_train_km = compress(x_train, y_train)
+	compression_time = time.time() - compression_time
 
 	start = time.time()
 	results = {
-		"compression_time": compression_time,
-		"height_compression": x_train.shape[0] / old_shape[0],
+		"approximation_time": compression_time,
+		"height_approximation": x_train_km.shape[0] / x_train.shape[0],
 		"epochs_amount": {},
 	}
 	
@@ -84,14 +74,17 @@ if __name__ == "__main__":
 				partial(polynomial, degree=degree),
 				label_set,
 				epochs,
-				x_train,
-				y_train
+				x_train_km,
+				y_train_km
 			)
 
 			MKP.fit()
+
+			epoch_training_time = time.time() - epoch_training_time
+
 			results["epochs_amount"][epochs]["degree"][degree] = {
 				"error": MKP.predict(x_test, y_test),
-				"time": time.time() - epoch_training_time
+				"training_time": epoch_training_time
 			}
 
 	results["training_time"] = time.time() - start

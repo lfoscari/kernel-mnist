@@ -47,17 +47,12 @@ class MultilabelPerceptron(Predictor):
 		return float(torch.sum(predictions != y_test) / y_test.shape[0])
 
 if __name__ == "__main__":
+	from MNIST import label_set, batch_data_iter
 	from tqdm import tqdm
 	import json
 	import time
-	from torch.utils.data import DataLoader
-	from MNIST import label_set, train_data, test_data
 
-	train_examples = iter(DataLoader(train_data, batch_size=10_000, shuffle=True))
-	test_examples = iter(DataLoader(test_data, batch_size=500, shuffle=True))
-
-	x_train, y_train = next(train_examples)
-	x_test, y_test = next(test_examples)
+	(x_train, y_train), (x_test, y_test) = batch_data_iter(10_000, 500)
 
 	start = time.time()
 	results = {
@@ -79,9 +74,12 @@ if __name__ == "__main__":
 		)
 
 		MP.fit()
+
+		epoch_training_time = time.time() - epoch_training_time
+
 		results["epochs_amount"][epochs] = {
 			"error": MP.predict(x_test, y_test),
-			"time": time.time() - epoch_training_time
+			"training_time": epoch_training_time
 		}
 
 	results["training_time"] = time.time() - start
