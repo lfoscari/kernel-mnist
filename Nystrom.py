@@ -7,7 +7,7 @@ import time
 import json
 
 if __name__ == "__main__":
-	(x_train, y_train), (x_test, y_test) = batch_data_iter(10_000, 500)
+	(x_train, y_train), (x_test, y_test) = batch_data_iter(60_000, 10_000)
 
 	results = {
 		"epochs_amount": {},

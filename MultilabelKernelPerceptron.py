@@ -12,7 +12,6 @@ class MultilabelKernelPerceptron(Predictor):
 	y_train: torch.Tensor
 	model: torch.Tensor = None
 	kernel_matrix: torch.Tensor = None
-	error: dict = None
 	
 	def __fit_label(self, label):
 		alpha = torch.zeros(self.x_train.shape[0])
@@ -32,7 +31,6 @@ class MultilabelKernelPerceptron(Predictor):
 		return alpha
 
 	def fit(self):
-		self.error = {label: {} for label in self.labels}
 		self.model = torch.empty((len(self.labels), self.x_train.shape[0]))
 		self.kernel_matrix = self.kernel(self.x_train, self.x_train.T)
 

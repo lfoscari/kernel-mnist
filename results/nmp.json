@@ -1,54 +1,54 @@
 {
  "epochs_amount": {
   "1": {
-   "error": 0.1979999989271164,
-   "trainin_time": 0.9845280647277832,
-   "approximation_time": 0.035245656967163086
+   "error": 0.17499999701976776,
+   "training_time": 6.388113021850586,
+   "approximation_time": 0.2848086357116699
   },
   "2": {
-   "error": 0.18000000715255737,
-   "trainin_time": 1.9689056873321533,
-   "approximation_time": 0.04078245162963867
+   "error": 0.17919999361038208,
+   "training_time": 12.973378896713257,
+   "approximation_time": 0.309337854385376
   },
   "3": {
-   "error": 0.15600000321865082,
-   "trainin_time": 2.9416143894195557,
-   "approximation_time": 0.03650307655334473
+   "error": 0.17100000381469727,
+   "training_time": 19.432896852493286,
+   "approximation_time": 0.2794032096862793
   },
   "4": {
-   "error": 0.15600000321865082,
-   "trainin_time": 3.982609510421753,
-   "approximation_time": 0.036962032318115234
+   "error": 0.12300000339746475,
+   "training_time": 25.91352677345276,
+   "approximation_time": 0.274547815322876
   },
   "5": {
-   "error": 0.1860000044107437,
-   "trainin_time": 4.913023471832275,
-   "approximation_time": 0.03711223602294922
+   "error": 0.120899997651577,
+   "training_time": 32.52016091346741,
+   "approximation_time": 0.2903573513031006
   },
   "6": {
-   "error": 0.17599999904632568,
-   "trainin_time": 5.926687479019165,
-   "approximation_time": 0.039780378341674805
+   "error": 0.1370999962091446,
+   "training_time": 38.42301082611084,
+   "approximation_time": 0.2903172969818115
   },
   "7": {
-   "error": 0.12600000202655792,
-   "trainin_time": 7.027293920516968,
-   "approximation_time": 0.04010295867919922
+   "error": 0.14659999310970306,
+   "training_time": 44.73624634742737,
+   "approximation_time": 0.28777074813842773
   },
   "8": {
-   "error": 0.18799999356269836,
-   "trainin_time": 8.134149312973022,
-   "approximation_time": 0.043335676193237305
+   "error": 0.1347000002861023,
+   "training_time": 51.004480600357056,
+   "approximation_time": 0.28281188011169434
   },
   "9": {
-   "error": 0.18799999356269836,
-   "trainin_time": 9.042075395584106,
-   "approximation_time": 0.04521989822387695
+   "error": 0.12409999966621399,
+   "training_time": 57.86058473587036,
+   "approximation_time": 0.29203271865844727
   },
   "10": {
-   "error": 0.17599999904632568,
-   "trainin_time": 10.085078716278076,
-   "approximation_time": 0.04610753059387207
+   "error": 0.1298999935388565,
+   "training_time": 64.55162906646729,
+   "approximation_time": 0.2852463722229004
   }
  }
 }

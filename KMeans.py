@@ -2,6 +2,12 @@ from kmeans_pytorch import kmeans
 import math
 import torch
 
+# Vale che sia sum sqrt(t) >= sqrt(sum t), questo fa schifo perché non posso dire che la matrice di kernel
+# sia lineare su n, effettivamente i risultati sono buoni, ma bisogna fare scena. Quindi è il caso di
+# provare a calcolare il numero di centroidi con t_i e con n, in particolare calcolo sqrt(n) e lo divido
+# tra gli insiemi S_i in base alla loro numerosità, in modo che sum t_i = sqrt(n).
+# Quindi K = sqrt(n) * (n / t_i) per ogni i.
+
 def compress(x_train, y_train):
 	# The idea is to split the training data according to the label and
 	# then find the clusters, this way we'll have clusters for each possible
@@ -22,7 +28,7 @@ def compress(x_train, y_train):
 	bucket_sizes = []
 
 	for label, bucket in enumerate(label_split):
-		# Taking K = sqrt(n) maked the kernel matrix linear in n
+		# Taking K = sqrt(n) makes the kernel matrix linear in n NOOOOOOO
 		K = int(math.sqrt(bucket.shape[0]))
 		centroids[label] = kmeans(bucket, K)
 		bucket_sizes.append(K)
@@ -47,7 +53,7 @@ if __name__ == "__main__":
 	def polynomial(a, b, c = 1., degree = 5.):
 		return torch.float_power(a @ b + c, degree)
 
-	(x_train, y_train), (x_test, y_test) = batch_data_iter(10_000, 500)
+	(x_train, y_train), (x_test, y_test) = batch_data_iter(60_000, 10_00)
 
 	print("K-means approximation step...")
 	compression_time = time.time()
