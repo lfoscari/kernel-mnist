@@ -5,5 +5,5 @@ Classes:
 	- KMeansMKPerceptron
 
 TODO:
-	- Fix NystromMKPerceptron accuracy, clearly something is wrong
-	- Measure more accurately time, consider time to train each epoch, instead of simply measuring the training time
+	- Measure total time to train degrees and epochs
+	- Add 1-feature to every data point in MultiLabelPerceptron?

@@ -2,8 +2,6 @@ from interface import Predictor
 from dataclasses import dataclass
 import torch
 
-# TODO: fix terrible accuracy
-
 @dataclass(repr=False)
 class MultilabelPerceptron(Predictor):
 	labels: set

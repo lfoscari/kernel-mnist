@@ -32,6 +32,7 @@ let myPythonPackages =
 		kmeans
 		tqdm
 		scikit-learn
+		matplotlib
 	]); in
 
 pkgs.mkShell {
