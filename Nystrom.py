@@ -1,3 +1,5 @@
+import re
+from numpy import degrees
 from sklearn.kernel_approximation import Nystroem
 from MultilabelPerceptron import *
 from MNIST import label_set, batch_data_iter
@@ -7,29 +9,29 @@ import time
 import json
 
 if __name__ == "__main__":
-	(x_train, y_train), (x_test, y_test) = batch_data_iter(60_000, 10_000)
+	(x_train, y_train), (x_test, y_test) = batch_data_iter(10_000, 500)
 
 	results = {
-		"epochs_amount": {},
+		"degree": {},
 	}
 
-	epochs_iteration = tqdm(range(1, 11))
+	progress = tqdm(range(1, 7))
 
-	for epochs in epochs_iteration:
-		results["epochs_amount"][epochs] = {"degree": {}}
+	for degree in progress:
+		results["degree"][degree] = {"epochs": {}}
 
-		for degree in range(1, 7):
-			epochs_iteration.set_description(f"Training with {epochs} epoch(s) and degree {degree}")
+		approximation_time = time.time()
 
-			approximation_time = time.time()
+		kernel_approx = Nystroem(kernel="polynomial", degree=degree, coef0=1, n_components=100)
+		kernel_approx = kernel_approx.fit(x_train)
 
-			kernel_approx = Nystroem(kernel="polynomial", degree=degree, coef0=1, n_components=100)
-			kernel_approx = kernel_approx.fit(x_train)
+		x_train_ny = torch.tensor(kernel_approx.transform(x_train),  dtype=x_train.dtype)
+		x_test_ny = torch.tensor(kernel_approx.transform(x_test),  dtype=x_test.dtype)
 
-			x_train_ny = torch.tensor(kernel_approx.transform(x_train),  dtype=x_train.dtype)
-			x_test_ny = torch.tensor(kernel_approx.transform(x_test),  dtype=x_test.dtype)
+		results["degree"][degree]["approximation_time"] = time.time() - approximation_time
 
-			approximation_time = time.time() - approximation_time
+		for epochs in range(1, 11):
+			progress.set_description(f"Training with {epochs} epoch(s) and degree {degree}")
 
 			epoch_training_time = time.time()
 
@@ -44,10 +46,9 @@ if __name__ == "__main__":
 
 			epoch_training_time = time.time() - epoch_training_time
 
-			results["epochs_amount"][epochs] = {
+			results["degree"][degree]["epochs"][epochs] = {
 				"error": NMP.predict(x_test_ny, y_test),
 				"training_time": epoch_training_time,
-				"approximation_time": approximation_time
 			}
 
 	dest = "./results/nmp.json"

@@ -19,12 +19,12 @@ class MultilabelPerceptron(Predictor):
 		while True:
 			update = False
 			for point, label in zip(self.x_train, y_train_norm):
-				if label * w.dot(point) <= 0:
+				if Predictor.sgn(w.dot(point)) != label:
 					w += label * point
 					update = True
 
 			if not update:
-				# print("Skipping remaining epochs") # DEBUG
+				print("Skipping remaining epochs") # DEBUG
 				break
 			
 			e += 1
