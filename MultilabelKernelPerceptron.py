@@ -11,16 +11,15 @@ class MultilabelKernelPerceptron(Predictor):
 	x_train: torch.Tensor
 	y_train: torch.Tensor
 	model: torch.Tensor = None
-	kernel_matrix: torch.Tensor = None
 	
-	def __fit_label(self, label):
+	def __fit_label(self, label, kernel_matrix):
 		alpha = torch.zeros(self.x_train.shape[0])
 		y_train_norm = Predictor.sgn_label(self.y_train, label)
 
 		for _ in range(self.epochs):
 			update = False
 
-			for index, (label_norm, kernel_row) in enumerate(zip(y_train_norm, self.kernel_matrix)):
+			for index, (label_norm, kernel_row) in enumerate(zip(y_train_norm, kernel_matrix)):
 				alpha_update = Predictor.sgn(torch.sum(alpha * y_train_norm * kernel_row, (0))) != label_norm
 				update = alpha_update or update
 				alpha[index] += alpha_update
@@ -32,20 +31,21 @@ class MultilabelKernelPerceptron(Predictor):
 
 	def fit(self):
 		self.model = torch.empty((len(self.labels), self.x_train.shape[0]))
-		self.kernel_matrix = self.kernel(self.x_train, self.x_train.T)
+		kernel_matrix = self.kernel(self.x_train, self.x_train.T)
 
 		for label in self.labels:
-			self.model[label] = self.__fit_label(label)
+			self.model[label] = self.__fit_label(label, kernel_matrix)
 
-	def predict(self, x_test, y_test):
-		test_kernel_matrix = self.kernel(x_test, self.x_train.T)
-		scores = [torch.sum(test_kernel_matrix * Predictor.sgn_label(self.y_train, label) * alpha, (1)) for label, alpha in enumerate(self.model)]
+	def predict(self, xs, ys):
+		kernel_matrix = self.kernel(xs, self.x_train.T)
+		scores = [torch.sum(kernel_matrix * Predictor.sgn_label(self.y_train, label) * alpha, (1)) for label, alpha in enumerate(self.model)]
 		predictions = torch.max(torch.stack(scores), 0)[1]
-		return float(torch.sum(predictions != y_test) / y_test.shape[0])
+		return float(torch.sum(predictions != ys) / ys.shape[0])
 		
 
 if __name__ == "__main__":
 	from MNIST import label_set, batch_data_iter
+	from interface import RESULTS_WITH_DEGREE as RESULTS, EPOCHS, DEGREES
 	from functools import partial
 	from tqdm import tqdm
 	import json
@@ -55,21 +55,12 @@ if __name__ == "__main__":
 		return torch.float_power(a @ b + c, degree)
 
 	(x_train, y_train), (x_test, y_test) = batch_data_iter(10_000, 500)
-
-	start = time.time()
-	results = {
-		"compression_time": 0,
-		"epochs_amount": {}
-	}
-
-	epochs_iteration = tqdm(range(1, 11))
+	epochs_iteration = tqdm(EPOCHS)
 
 	for epochs in epochs_iteration:
-		results["epochs_amount"][epochs] = {"degree": {}}
-
-		for degree in range(1, 7):
+		for degree in DEGREES:
 			epochs_iteration.set_description(f"Training with {epochs} epoch(s) and degree {degree}")
-			epoch_training_time = time.time()
+			training_time = time.time()
 
 			MKP = MultilabelKernelPerceptron(
 				partial(polynomial, degree=degree),
@@ -81,15 +72,14 @@ if __name__ == "__main__":
 
 			MKP.fit()
 
-			epoch_training_time = time.time() - epoch_training_time
+			training_time = time.time() - training_time
 
-			results["epochs_amount"][epochs]["degree"][degree] = {
-				"error": MKP.predict(x_test, y_test),
-				"training_time": epoch_training_time
+			RESULTS["epochs"][epochs]["degree"][degree] = {
+				"training_time": training_time,
+				"training_error": MKP.predict(x_train, y_train),
+				"test_error": MKP.predict(x_test, y_test)
 			}
 
-	results["training_time"] = time.time() - start
-
 	dest = "./results/mkp.json"
-	json.dump(results, open(dest, "w"), indent=True)
+	json.dump(RESULTS, open(dest, "w"), indent=True)
 	print("Results saved in", dest)

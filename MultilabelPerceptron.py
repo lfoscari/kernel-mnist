@@ -12,9 +12,8 @@ class MultilabelPerceptron(Predictor):
 
 	def __fit_label(self, label):
 		w = torch.zeros(self.x_train.shape[1], dtype=self.x_train.dtype)
-		e = 0
-
 		y_train_norm = Predictor.sgn_label(self.y_train, label)
+		epoch = 0
 
 		while True:
 			update = False
@@ -24,11 +23,11 @@ class MultilabelPerceptron(Predictor):
 					update = True
 
 			if not update:
-				print("Skipping remaining epochs") # DEBUG
+				# print("Skipping remaining epochs") # DEBUG
 				break
 			
-			e += 1
-			if self.epochs is not None and e >= self.epochs:
+			epoch += 1
+			if self.epochs is not None and epoch >= self.epochs:
 				break
 			
 		return w
@@ -39,30 +38,24 @@ class MultilabelPerceptron(Predictor):
 		for label in self.labels:
 			self.model[label] = self.__fit_label(label)
 
-	def predict(self, x_test, y_test):
-		scores = x_test @ self.model.T
+	def predict(self, xs, ys):
+		scores = xs @ self.model.T
 		predictions = torch.max(scores, 1)[1]
-		return float(torch.sum(predictions != y_test) / y_test.shape[0])
+		return float(torch.sum(predictions != ys) / ys.shape[0])
 
 if __name__ == "__main__":
 	from MNIST import label_set, batch_data_iter
+	from interface import EPOCHS, RESULTS
 	from tqdm import tqdm
 	import json
 	import time
 
 	(x_train, y_train), (x_test, y_test) = batch_data_iter(10_000, 500)
-
-	start = time.time()
-	results = {
-		"compression_time": 0,
-		"epochs_amount": {}
-	}
-
-	epochs_iteration = tqdm(range(1, 11))
+	epochs_iteration = tqdm(EPOCHS)
 
 	for epochs in epochs_iteration:
 		epochs_iteration.set_description(f"Training with {epochs} epoch(s)")
-		epoch_training_time = time.time()
+		training_time = time.time()
 
 		MP = MultilabelPerceptron(
 			label_set,
@@ -73,15 +66,14 @@ if __name__ == "__main__":
 
 		MP.fit()
 
-		epoch_training_time = time.time() - epoch_training_time
+		training_time = time.time() - training_time
 
-		results["epochs_amount"][epochs] = {
-			"error": MP.predict(x_test, y_test),
-			"training_time": epoch_training_time
+		RESULTS["epochs"][epochs] = {
+			"training_time": training_time,
+			"training_error": MP.predict(x_train, y_train),
+			"test_error": MP.predict(x_test, y_test)
 		}
 
-	results["training_time"] = time.time() - start
-
 	dest = "./results/mp.json"
-	json.dump(results, open(dest, "w"), indent=True)
+	json.dump(RESULTS, open(dest, "w"), indent=True)
 	print("Results saved in", dest)

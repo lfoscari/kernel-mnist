@@ -44,6 +44,7 @@ def compress(x_train, y_train):
 
 if __name__ == "__main__":
 	from MultilabelKernelPerceptron import *
+	from interface import RESULTS_WITH_DEGREE as RESULTS, EPOCHS, DEGREES
 	from MNIST import label_set, batch_data_iter
 	from tqdm import tqdm
 	from functools import partial
@@ -56,25 +57,19 @@ if __name__ == "__main__":
 	(x_train, y_train), (x_test, y_test) = batch_data_iter(60_000, 10_00)
 
 	print("K-means approximation step...")
-	compression_time = time.time()
-	x_train_km, y_train_km = compress(x_train, y_train)
-	compression_time = time.time() - compression_time
 
-	start = time.time()
-	results = {
-		"approximation_time": compression_time,
-		"height_approximation": x_train_km.shape[0] / x_train.shape[0],
-		"epochs_amount": {},
-	}
+	sketching_time = time.time()
+	x_train_km, y_train_km = compress(x_train, y_train)
+	sketching_time = time.time() - sketching_time
+
+	RESULTS["sketching_time"] = sketching_time
 	
-	epochs_iteration = tqdm(range(1, 11))
+	epochs_iteration = tqdm(EPOCHS)
 
 	for epochs in epochs_iteration:
-		results["epochs_amount"][epochs] = {"degree": {}}
-
-		for degree in range(1, 7):
+		for degree in DEGREES:
 			epochs_iteration.set_description(f"Training with {epochs} epoch(s) and degree {degree}")
-			epoch_training_time = time.time()
+			training_time = time.time()
 
 			MKP = MultilabelKernelPerceptron(
 				partial(polynomial, degree=degree),
@@ -86,15 +81,14 @@ if __name__ == "__main__":
 
 			MKP.fit()
 
-			epoch_training_time = time.time() - epoch_training_time
+			training_time = time.time() - training_time
 
-			results["epochs_amount"][epochs]["degree"][degree] = {
-				"error": MKP.predict(x_test, y_test),
-				"training_time": epoch_training_time
+			RESULTS["epochs"][epochs]["degree"][degree] = {
+				"training_time": training_time,
+				"training_error": MKP.predict(x_train_km, y_train_km),
+				"test_error": MKP.predict(x_test, y_test)
 			}
 
-	results["training_time"] = time.time() - start
-
 	dest = "./results/kmmkp.json"
-	json.dump(results, open(dest, "w"), indent=True)
+	json.dump(RESULTS, open(dest, "w"), indent=True)
 	print("Results saved in", dest)
