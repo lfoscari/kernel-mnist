@@ -1,4 +1,4 @@
-from interface import Predictor
+from utils import Predictor
 from dataclasses import dataclass
 from typing import Callable
 import torch
@@ -45,10 +45,9 @@ class MultilabelKernelPerceptron(Predictor):
 
 if __name__ == "__main__":
 	from MNIST import label_set, batch_data_iter
-	from interface import RESULTS_WITH_DEGREE as RESULTS, EPOCHS, DEGREES
+	from utils import RESULTS_WITH_DEGREE as RESULTS, EPOCHS, DEGREES, save_to_json, save_to_csv
 	from functools import partial
 	from tqdm import tqdm
-	import json
 	import time
 
 	def polynomial(a, b, c = 1., degree = 5.):
@@ -80,6 +79,5 @@ if __name__ == "__main__":
 				"test_error": MKP.predict(x_test, y_test)
 			}
 
-	dest = "./results/mkp.json"
-	json.dump(RESULTS, open(dest, "w"), indent=True)
-	print("Results saved in", dest)
+	save_to_json(RESULTS, "mkp")
+	save_to_csv(RESULTS, "mkp")

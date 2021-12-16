@@ -1,12 +1,11 @@
-from interface import DEGREES
+from utils import DEGREES, save_to_json, save_to_csv
 from sklearn.kernel_approximation import Nystroem
 from MultilabelPerceptron import *
-from interface import RESULTS_WITH_DEGREE as RESULTS, EPOCHS, DEGREES
+from utils import RESULTS_WITH_DEGREE as RESULTS, EPOCHS, DEGREES
 from MNIST import label_set, batch_data_iter
 from tqdm import tqdm
 import torch
 import time
-import json
 
 if __name__ == "__main__":
 	(x_train, y_train), (x_test, y_test) = batch_data_iter(10_000, 500)
@@ -46,6 +45,5 @@ if __name__ == "__main__":
 				"sketching_time": sketching_time
 			}
 
-	dest = "./results/nmp.json"
-	json.dump(RESULTS, open(dest, "w"), indent=True)
-	print("Results saved in", dest)
+	save_to_json(RESULTS, "nmp")
+	save_to_csv(RESULTS, "nmp")

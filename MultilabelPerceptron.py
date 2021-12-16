@@ -1,4 +1,4 @@
-from interface import Predictor
+from utils import Predictor
 from dataclasses import dataclass
 import torch
 
@@ -45,9 +45,8 @@ class MultilabelPerceptron(Predictor):
 
 if __name__ == "__main__":
 	from MNIST import label_set, batch_data_iter
-	from interface import EPOCHS, RESULTS
+	from utils import EPOCHS, RESULTS, save_to_json, save_to_csv
 	from tqdm import tqdm
-	import json
 	import time
 
 	(x_train, y_train), (x_test, y_test) = batch_data_iter(10_000, 500)
@@ -74,6 +73,5 @@ if __name__ == "__main__":
 			"test_error": MP.predict(x_test, y_test)
 		}
 
-	dest = "./results/mp.json"
-	json.dump(RESULTS, open(dest, "w"), indent=True)
-	print("Results saved in", dest)
+	save_to_json(RESULTS, "mp")
+	save_to_csv(RESULTS, "mp")

@@ -44,12 +44,11 @@ def compress(x_train, y_train):
 
 if __name__ == "__main__":
 	from MultilabelKernelPerceptron import *
-	from interface import RESULTS_WITH_DEGREE as RESULTS, EPOCHS, DEGREES
+	from utils import RESULTS_WITH_DEGREE as RESULTS, EPOCHS, DEGREES, save_to_json, save_to_csv
 	from MNIST import label_set, batch_data_iter
 	from tqdm import tqdm
 	from functools import partial
 	import time
-	import json
 
 	def polynomial(a, b, c = 1., degree = 5.):
 		return torch.float_power(a @ b + c, degree)
@@ -89,6 +88,5 @@ if __name__ == "__main__":
 				"test_error": MKP.predict(x_test, y_test)
 			}
 
-	dest = "./results/kmmkp.json"
-	json.dump(RESULTS, open(dest, "w"), indent=True)
-	print("Results saved in", dest)
+	save_to_json(RESULTS, "kmmkp")
+	save_to_csv(RESULTS, "kmmkp")
