@@ -3,343 +3,343 @@
   "1": {
    "degree": {
     "1": {
-     "training_time": 0.48996520042419434,
+     "training_time": 0.24580812454223633,
      "training_error": 0.8999999761581421,
-     "test_error": 0.9079999923706055
+     "test_error": 0.8930000066757202
     },
     "2": {
-     "training_time": 0.46750688552856445,
-     "training_error": 0.8974025845527649,
-     "test_error": 0.9039999842643738
+     "training_time": 0.23454070091247559,
+     "training_error": 0.8987013101577759,
+     "test_error": 0.8830000162124634
     },
     "3": {
-     "training_time": 0.44762253761291504,
-     "training_error": 0.8480519652366638,
-     "test_error": 0.828000009059906
+     "training_time": 0.23122453689575195,
+     "training_error": 0.8441558480262756,
+     "test_error": 0.8059999942779541
     },
     "4": {
-     "training_time": 0.44251322746276855,
-     "training_error": 0.7922077775001526,
-     "test_error": 0.7950000166893005
+     "training_time": 0.2342851161956787,
+     "training_error": 0.7493506669998169,
+     "test_error": 0.7229999899864197
     },
     "5": {
-     "training_time": 0.4386003017425537,
-     "training_error": 0.7818182110786438,
-     "test_error": 0.7720000147819519
+     "training_time": 0.23308181762695312,
+     "training_error": 0.7857142686843872,
+     "test_error": 0.7400000095367432
     },
     "6": {
-     "training_time": 0.438950777053833,
-     "training_error": 0.7350649237632751,
-     "test_error": 0.7300000190734863
+     "training_time": 0.23809480667114258,
+     "training_error": 0.7454545497894287,
+     "test_error": 0.7009999752044678
     }
    }
   },
   "2": {
    "degree": {
     "1": {
-     "training_time": 0.9158203601837158,
-     "training_error": 0.8805195093154907,
-     "test_error": 0.8690000176429749
+     "training_time": 0.4602696895599365,
+     "training_error": 0.8987013101577759,
+     "test_error": 0.8889999985694885
     },
     "2": {
-     "training_time": 0.8374273777008057,
-     "training_error": 0.768831193447113,
-     "test_error": 0.7649999856948853
+     "training_time": 0.4574306011199951,
+     "training_error": 0.7740259766578674,
+     "test_error": 0.7440000176429749
     },
     "3": {
-     "training_time": 0.9511940479278564,
-     "training_error": 0.6402597427368164,
-     "test_error": 0.640999972820282
+     "training_time": 0.47266602516174316,
+     "training_error": 0.6454545259475708,
+     "test_error": 0.6240000128746033
     },
     "4": {
-     "training_time": 0.8976633548736572,
-     "training_error": 0.4961038827896118,
-     "test_error": 0.5270000100135803
+     "training_time": 0.47659873962402344,
+     "training_error": 0.5376623272895813,
+     "test_error": 0.5099999904632568
     },
     "5": {
-     "training_time": 0.822218656539917,
-     "training_error": 0.366233766078949,
-     "test_error": 0.4269999861717224
+     "training_time": 0.47870612144470215,
+     "training_error": 0.4948051869869232,
+     "test_error": 0.5090000033378601
     },
     "6": {
-     "training_time": 0.8089108467102051,
-     "training_error": 0.3961038887500763,
-     "test_error": 0.44699999690055847
+     "training_time": 0.4774668216705322,
+     "training_error": 0.3935064971446991,
+     "test_error": 0.4259999990463257
     }
    }
   },
   "3": {
    "degree": {
     "1": {
-     "training_time": 1.1932015419006348,
-     "training_error": 0.8337662220001221,
-     "test_error": 0.8320000171661377
+     "training_time": 0.7070944309234619,
+     "training_error": 0.8831169009208679,
+     "test_error": 0.8529999852180481
     },
     "2": {
-     "training_time": 1.2177355289459229,
-     "training_error": 0.5350649356842041,
-     "test_error": 0.5690000057220459
+     "training_time": 0.6902668476104736,
+     "training_error": 0.649350643157959,
+     "test_error": 0.6190000176429749
     },
     "3": {
-     "training_time": 1.182887315750122,
-     "training_error": 0.5142857432365417,
-     "test_error": 0.49900001287460327
+     "training_time": 0.7004172801971436,
+     "training_error": 0.6077921986579895,
+     "test_error": 0.5680000185966492
     },
     "4": {
-     "training_time": 1.1925253868103027,
-     "training_error": 0.3896103799343109,
-     "test_error": 0.4000000059604645
+     "training_time": 0.7270970344543457,
+     "training_error": 0.2935065031051636,
+     "test_error": 0.27300000190734863
     },
     "5": {
-     "training_time": 1.1879737377166748,
-     "training_error": 0.26233765482902527,
-     "test_error": 0.3190000057220459
+     "training_time": 0.7373690605163574,
+     "training_error": 0.3168831169605255,
+     "test_error": 0.31700000166893005
     },
     "6": {
-     "training_time": 1.2210869789123535,
-     "training_error": 0.15974025428295135,
-     "test_error": 0.21899999678134918
+     "training_time": 0.7373292446136475,
+     "training_error": 0.2844155728816986,
+     "test_error": 0.32199999690055847
     }
    }
   },
   "4": {
    "degree": {
     "1": {
-     "training_time": 1.5676848888397217,
-     "training_error": 0.8012986779212952,
-     "test_error": 0.796999990940094
+     "training_time": 0.9418182373046875,
+     "training_error": 0.7623376846313477,
+     "test_error": 0.7250000238418579
     },
     "2": {
-     "training_time": 1.595923662185669,
-     "training_error": 0.5870130062103271,
-     "test_error": 0.5910000205039978
+     "training_time": 0.9495606422424316,
+     "training_error": 0.48571428656578064,
+     "test_error": 0.4650000035762787
     },
     "3": {
-     "training_time": 1.5750155448913574,
-     "training_error": 0.3636363744735718,
-     "test_error": 0.4090000092983246
+     "training_time": 0.911475419998169,
+     "training_error": 0.26623377203941345,
+     "test_error": 0.29600000381469727
     },
     "4": {
-     "training_time": 1.5637938976287842,
-     "training_error": 0.20000000298023224,
-     "test_error": 0.2540000081062317
+     "training_time": 0.926433801651001,
+     "training_error": 0.3285714387893677,
+     "test_error": 0.31299999356269836
     },
     "5": {
-     "training_time": 1.5655663013458252,
-     "training_error": 0.06623376905918121,
-     "test_error": 0.16599999368190765
+     "training_time": 0.9160780906677246,
+     "training_error": 0.10259740054607391,
+     "test_error": 0.16200000047683716
     },
     "6": {
-     "training_time": 1.5804424285888672,
-     "training_error": 0.09220778942108154,
-     "test_error": 0.17000000178813934
+     "training_time": 0.9211606979370117,
+     "training_error": 0.07662338018417358,
+     "test_error": 0.14499999582767487
     }
    }
   },
   "5": {
    "degree": {
     "1": {
-     "training_time": 1.955976963043213,
+     "training_time": 1.1617772579193115,
      "training_error": 0.7805194854736328,
-     "test_error": 0.800000011920929
+     "test_error": 0.7490000128746033
     },
     "2": {
-     "training_time": 2.0709850788116455,
-     "training_error": 0.4233766198158264,
-     "test_error": 0.4449999928474426
+     "training_time": 1.1415119171142578,
+     "training_error": 0.30129870772361755,
+     "test_error": 0.3179999887943268
     },
     "3": {
-     "training_time": 2.053135395050049,
-     "training_error": 0.2818181812763214,
-     "test_error": 0.3199999928474426
+     "training_time": 1.148118019104004,
+     "training_error": 0.26753246784210205,
+     "test_error": 0.3019999861717224
     },
     "4": {
-     "training_time": 2.0811874866485596,
-     "training_error": 0.10389610379934311,
-     "test_error": 0.20499999821186066
+     "training_time": 1.1566219329833984,
+     "training_error": 0.11168830841779709,
+     "test_error": 0.17299999296665192
     },
     "5": {
-     "training_time": 2.000861644744873,
-     "training_error": 0.0714285746216774,
-     "test_error": 0.1599999964237213
+     "training_time": 1.1476783752441406,
+     "training_error": 0.09480519592761993,
+     "test_error": 0.1469999998807907
     },
     "6": {
-     "training_time": 2.069897174835205,
-     "training_error": 0.04545454680919647,
-     "test_error": 0.1379999965429306
+     "training_time": 1.1972880363464355,
+     "training_error": 0.014285714365541935,
+     "test_error": 0.09399999678134918
     }
    }
   },
   "6": {
    "degree": {
     "1": {
-     "training_time": 2.608260154724121,
-     "training_error": 0.6454545259475708,
+     "training_time": 1.4098191261291504,
+     "training_error": 0.6701298952102661,
      "test_error": 0.6520000100135803
     },
     "2": {
-     "training_time": 2.538257598876953,
-     "training_error": 0.4610389471054077,
-     "test_error": 0.48100000619888306
+     "training_time": 1.4158425331115723,
+     "training_error": 0.34675323963165283,
+     "test_error": 0.34599998593330383
     },
     "3": {
-     "training_time": 2.379439353942871,
-     "training_error": 0.18441557884216309,
-     "test_error": 0.25699999928474426
+     "training_time": 1.3940348625183105,
+     "training_error": 0.15974025428295135,
+     "test_error": 0.1889999955892563
     },
     "4": {
-     "training_time": 2.3317441940307617,
-     "training_error": 0.02467532455921173,
-     "test_error": 0.1080000028014183
+     "training_time": 1.4169068336486816,
+     "training_error": 0.04415584355592728,
+     "test_error": 0.12200000137090683
     },
     "5": {
-     "training_time": 2.3235037326812744,
-     "training_error": 0.012987012974917889,
-     "test_error": 0.0949999988079071
+     "training_time": 1.3952152729034424,
+     "training_error": 0.02207792177796364,
+     "test_error": 0.10199999809265137
     },
     "6": {
-     "training_time": 2.345005512237549,
+     "training_time": 1.3937420845031738,
      "training_error": 0.0038961039390414953,
-     "test_error": 0.10400000214576721
+     "test_error": 0.07500000298023224
     }
    }
   },
   "7": {
    "degree": {
     "1": {
-     "training_time": 2.758671522140503,
-     "training_error": 0.6467532515525818,
-     "test_error": 0.6729999780654907
+     "training_time": 1.641768217086792,
+     "training_error": 0.7051948308944702,
+     "test_error": 0.6710000038146973
     },
     "2": {
-     "training_time": 2.7281880378723145,
-     "training_error": 0.30259740352630615,
-     "test_error": 0.3529999852180481
+     "training_time": 1.646101713180542,
+     "training_error": 0.2545454502105713,
+     "test_error": 0.2770000100135803
     },
     "3": {
-     "training_time": 2.751103639602661,
-     "training_error": 0.09740259498357773,
-     "test_error": 0.20200000703334808
+     "training_time": 1.6521477699279785,
+     "training_error": 0.09090909361839294,
+     "test_error": 0.14100000262260437
     },
     "4": {
-     "training_time": 2.6466972827911377,
-     "training_error": 0.0181818176060915,
-     "test_error": 0.1120000034570694
+     "training_time": 1.6756505966186523,
+     "training_error": 0.025974025949835777,
+     "test_error": 0.10199999809265137
     },
     "5": {
-     "training_time": 2.5579538345336914,
-     "training_error": 0.007792207878082991,
-     "test_error": 0.09799999743700027
+     "training_time": 1.572756290435791,
+     "training_error": 0.011688311584293842,
+     "test_error": 0.09399999678134918
     },
     "6": {
-     "training_time": 2.5497798919677734,
-     "training_error": 0.0,
-     "test_error": 0.10300000011920929
+     "training_time": 1.5479578971862793,
+     "training_error": 0.002597402548417449,
+     "test_error": 0.07800000160932541
     }
    }
   },
   "8": {
    "degree": {
     "1": {
-     "training_time": 3.143886089324951,
-     "training_error": 0.5038961172103882,
-     "test_error": 0.5450000166893005
+     "training_time": 1.8676679134368896,
+     "training_error": 0.5844155550003052,
+     "test_error": 0.5649999976158142
     },
     "2": {
-     "training_time": 3.162031888961792,
-     "training_error": 0.29740259051322937,
-     "test_error": 0.3619999885559082
+     "training_time": 1.8064889907836914,
+     "training_error": 0.1831168830394745,
+     "test_error": 0.2290000021457672
     },
     "3": {
-     "training_time": 3.202110767364502,
-     "training_error": 0.07922077924013138,
-     "test_error": 0.1860000044107437
+     "training_time": 1.8458473682403564,
+     "training_error": 0.02857142873108387,
+     "test_error": 0.10000000149011612
     },
     "4": {
-     "training_time": 2.8783867359161377,
-     "training_error": 0.012987012974917889,
-     "test_error": 0.1080000028014183
+     "training_time": 1.849067211151123,
+     "training_error": 0.04545454680919647,
+     "test_error": 0.11699999868869781
     },
     "5": {
-     "training_time": 2.768040657043457,
-     "training_error": 0.02857142873108387,
-     "test_error": 0.1080000028014183
+     "training_time": 1.6968121528625488,
+     "training_error": 0.002597402548417449,
+     "test_error": 0.07400000095367432
     },
     "6": {
-     "training_time": 2.8104031085968018,
-     "training_error": 0.0,
-     "test_error": 0.10499999672174454
+     "training_time": 1.6390886306762695,
+     "training_error": 0.002597402548417449,
+     "test_error": 0.07800000160932541
     }
    }
   },
   "9": {
    "degree": {
     "1": {
-     "training_time": 3.544633626937866,
-     "training_error": 0.6025974154472351,
-     "test_error": 0.6079999804496765
+     "training_time": 2.0683529376983643,
+     "training_error": 0.6090909242630005,
+     "test_error": 0.5910000205039978
     },
     "2": {
-     "training_time": 3.5363171100616455,
-     "training_error": 0.18961039185523987,
-     "test_error": 0.27399998903274536
+     "training_time": 2.1766366958618164,
+     "training_error": 0.26493507623672485,
+     "test_error": 0.2709999978542328
     },
     "3": {
-     "training_time": 3.5899436473846436,
-     "training_error": 0.029870130121707916,
-     "test_error": 0.1340000033378601
-    },
-    "4": {
-     "training_time": 3.3130943775177,
-     "training_error": 0.005194805096834898,
-     "test_error": 0.09099999815225601
-    },
-    "5": {
-     "training_time": 3.148759603500366,
-     "training_error": 0.023376623168587685,
+     "training_time": 2.117182970046997,
+     "training_error": 0.02467532455921173,
      "test_error": 0.10499999672174454
     },
+    "4": {
+     "training_time": 2.0109260082244873,
+     "training_error": 0.015584415756165981,
+     "test_error": 0.09700000286102295
+    },
+    "5": {
+     "training_time": 1.809802532196045,
+     "training_error": 0.0012987012742087245,
+     "test_error": 0.07400000095367432
+    },
     "6": {
-     "training_time": 2.9650444984436035,
-     "training_error": 0.0,
-     "test_error": 0.10599999874830246
+     "training_time": 1.7166342735290527,
+     "training_error": 0.0012987012742087245,
+     "test_error": 0.07800000160932541
     }
    }
   },
   "10": {
    "degree": {
     "1": {
-     "training_time": 4.326924800872803,
-     "training_error": 0.5623376369476318,
-     "test_error": 0.5899999737739563
+     "training_time": 2.3667266368865967,
+     "training_error": 0.5311688184738159,
+     "test_error": 0.503000020980835
     },
     "2": {
-     "training_time": 4.3164379596710205,
-     "training_error": 0.1077922061085701,
-     "test_error": 0.20200000703334808
+     "training_time": 2.365265130996704,
+     "training_error": 0.20129869878292084,
+     "test_error": 0.23100000619888306
     },
     "3": {
-     "training_time": 4.238820314407349,
-     "training_error": 0.04025974124670029,
-     "test_error": 0.14800000190734863
+     "training_time": 2.257564067840576,
+     "training_error": 0.04415584355592728,
+     "test_error": 0.11599999666213989
     },
     "4": {
-     "training_time": 3.4660279750823975,
-     "training_error": 0.0012987012742087245,
-     "test_error": 0.08500000089406967
+     "training_time": 2.0294103622436523,
+     "training_error": 0.002597402548417449,
+     "test_error": 0.08900000154972076
     },
     "5": {
-     "training_time": 3.0913758277893066,
-     "training_error": 0.016883116215467453,
-     "test_error": 0.10199999809265137
+     "training_time": 1.8547062873840332,
+     "training_error": 0.0,
+     "test_error": 0.07400000095367432
     },
     "6": {
-     "training_time": 3.154745578765869,
-     "training_error": 0.0,
-     "test_error": 0.10599999874830246
+     "training_time": 1.7403101921081543,
+     "training_error": 0.0012987012742087245,
+     "test_error": 0.07800000160932541
     }
    }
   }
  },
- "sketching_time": 281.9202814102173
+ "sketching_time": 316.20293951034546
 }
