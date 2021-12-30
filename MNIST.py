@@ -2,8 +2,6 @@ from torchvision.transforms import ToTensor, Compose, Lambda
 from torch.utils.data import DataLoader
 from torchvision import datasets
 
-# TODO: find a way to remove numpy warning
-
 label_set = list(range(10))
 
 train_data = datasets.MNIST(
@@ -26,9 +24,9 @@ test_data = datasets.MNIST(
 	])
 )
 
-def batch_data_iter(batch_train, batch_test):
-	train_dataloader = DataLoader(train_data, batch_size=batch_train, shuffle=True)
-	test_dataloader = DataLoader(test_data, batch_size=batch_test, shuffle=True)
+def batch_data_iter(training_batch_size, test_batch_size):
+	train_dataloader = DataLoader(train_data, batch_size=training_batch_size, shuffle=True)
+	test_dataloader = DataLoader(test_data, batch_size=test_batch_size, shuffle=True)
 
 	train_examples = iter(train_dataloader)
 	test_examples = iter(test_dataloader)

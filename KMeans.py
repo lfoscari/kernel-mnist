@@ -29,9 +29,14 @@ def compress(x_train, y_train):
 		bucket_sizes.append(K)
 
 	# Create the new training set by joining the buckets,
-	# labeling the data and shuffleing everything
+	# labeling the data
 	x_train_km = torch.cat([c for _, c in centroids.values()])
 	y_train_km = torch.cat([torch.empty(K).fill_(label) for K, label in zip(bucket_sizes, label_set)])
+
+	# Shuffle everything
+	permutation = torch.randperm(x_train_km.shape[0])
+	x_train_km = x_train_km[permutation]
+	y_train_km = y_train_km[permutation]
 
 	# Alternative approach
 	# This one simply sets a K and uses k-means on the whole dataset, then
@@ -51,24 +56,25 @@ def compress(x_train, y_train):
 
 
 if __name__ == "__main__":
-	from MultilabelKernelPerceptron import *
-	from utils import RESULTS_WITH_DEGREE as RESULTS, EPOCHS, DEGREES, save_to_json, save_to_csv
+	from utils import RESULTS_TEMPLATE as RESULTS, EPOCHS, DEGREES, save_to_json, save_to_csv, polynomial
+	from MultilabelKernelPerceptron import MultilabelKernelPerceptron
 	from MNIST import label_set, batch_data_iter
 	from tqdm import tqdm
 	from functools import partial
 	import time
 
-	def polynomial(a, b, c = 1., degree = 5.):
-		return torch.float_power(a @ b + c, degree)
+	TRAINING_SET_SIZE=60_000
+	TEST_SET_SIZE=10_000
 
-	(x_train, y_train), (x_test, y_test) = batch_data_iter(60_000, 10_000)
-
+	(x_train, y_train), (x_test, y_test) = batch_data_iter(TRAINING_SET_SIZE, TEST_SET_SIZE)
+	print(f"Running Multi-label Kernel Perceptron with k-means sketching on {TRAINING_SET_SIZE}/{TEST_SET_SIZE} MNIST dataset")
+	
 	print("K-means approximation step...")
-
 	sketching_time = time.time()
+	
 	x_train_km, y_train_km = compress(x_train, y_train)
-	sketching_time = time.time() - sketching_time
 
+	sketching_time = time.time() - sketching_time
 	RESULTS["sketching_time"] = sketching_time
 
 	epochs_iteration = tqdm(EPOCHS)
@@ -89,7 +95,6 @@ if __name__ == "__main__":
 			MKP.fit()
 
 			training_time = time.time() - training_time
-
 			RESULTS["epochs"][epochs]["degree"][degree] = {
 				"training_time": training_time,
 				"training_error": MKP.predict(x_train_km, y_train_km),

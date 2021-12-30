@@ -45,15 +45,17 @@ class MultilabelKernelPerceptron(Predictor):
 
 if __name__ == "__main__":
 	from MNIST import label_set, batch_data_iter
-	from utils import RESULTS_WITH_DEGREE as RESULTS, EPOCHS, DEGREES, save_to_json, save_to_csv
+	from utils import RESULTS_TEMPLATE as RESULTS, EPOCHS, DEGREES, save_to_json, save_to_csv, polynomial
 	from functools import partial
 	from tqdm import tqdm
 	import time
 
-	def polynomial(a, b, c = 1., degree = 5.):
-		return torch.float_power(a @ b + c, degree)
+	TRAINING_SET_SIZE=10_000
+	TEST_SET_SIZE=1_000
 
-	(x_train, y_train), (x_test, y_test) = batch_data_iter(10_000, 500)
+	(x_train, y_train), (x_test, y_test) = batch_data_iter(TRAINING_SET_SIZE, TEST_SET_SIZE)
+	print(f"Running Multi-label Kernel Perceptron on {TRAINING_SET_SIZE}/{TEST_SET_SIZE} MNIST dataset")
+
 	epochs_iteration = tqdm(EPOCHS)
 
 	for epochs in epochs_iteration:
@@ -72,7 +74,6 @@ if __name__ == "__main__":
 			MKP.fit()
 
 			training_time = time.time() - training_time
-
 			RESULTS["epochs"][epochs]["degree"][degree] = {
 				"training_time": training_time,
 				"training_error": MKP.predict(x_train, y_train),
