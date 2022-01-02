@@ -43,42 +43,42 @@ class MultilabelKernelPerceptron(Predictor):
 		return float(torch.sum(predictions != ys) / ys.shape[0])
 		
 
-if __name__ == "__main__":
-	from MNIST import label_set, batch_data_iter
-	from utils import RESULTS_TEMPLATE as RESULTS, EPOCHS, DEGREES, save_to_json, save_to_csv, polynomial
-	from functools import partial
-	from tqdm import tqdm
-	import time
+# if __name__ == "__main__":
+# 	from MNIST import label_set, batch_data_iter
+# 	from utils import RESULTS_TEMPLATE as RESULTS, EPOCHS, DEGREES, save_to_json, save_to_csv, polynomial
+# 	from functools import partial
+# 	from tqdm import tqdm
+# 	import time
 
-	TRAINING_SET_SIZE=10_000
-	TEST_SET_SIZE=1_000
+# 	TRAINING_SET_SIZE=10_000
+# 	TEST_SET_SIZE=1_000
 
-	(x_train, y_train), (x_test, y_test) = batch_data_iter(TRAINING_SET_SIZE, TEST_SET_SIZE)
-	print(f"Running Multi-label Kernel Perceptron on {TRAINING_SET_SIZE}/{TEST_SET_SIZE} MNIST dataset")
+# 	(x_train, y_train), (x_test, y_test) = batch_data_iter(TRAINING_SET_SIZE, TEST_SET_SIZE)
+# 	print(f"Running Multi-label Kernel Perceptron on {TRAINING_SET_SIZE}/{TEST_SET_SIZE} MNIST dataset")
 
-	epochs_iteration = tqdm(EPOCHS)
+# 	epochs_iteration = tqdm(EPOCHS)
 
-	for epochs in epochs_iteration:
-		for degree in DEGREES:
-			epochs_iteration.set_description(f"Training with {epochs} epoch(s) and degree {degree}")
-			training_time = time.time()
+# 	for epochs in epochs_iteration:
+# 		for degree in DEGREES:
+# 			epochs_iteration.set_description(f"Training with {epochs} epoch(s) and degree {degree}")
+# 			training_time = time.time()
 
-			MKP = MultilabelKernelPerceptron(
-				partial(polynomial, degree=degree),
-				label_set,
-				epochs,
-				x_train,
-				y_train,
-			)
+# 			MKP = MultilabelKernelPerceptron(
+# 				partial(polynomial, degree=degree),
+# 				label_set,
+# 				epochs,
+# 				x_train,
+# 				y_train,
+# 			)
 
-			MKP.fit()
+# 			MKP.fit()
 
-			training_time = time.time() - training_time
-			RESULTS["epochs"][epochs]["degree"][degree] = {
-				"training_time": training_time,
-				"training_error": MKP.predict(x_train, y_train),
-				"test_error": MKP.predict(x_test, y_test)
-			}
+# 			training_time = time.time() - training_time
+# 			RESULTS["epochs"][epochs]["degree"][degree] = {
+# 				"training_time": training_time,
+# 				"training_error": MKP.predict(x_train, y_train),
+# 				"test_error": MKP.predict(x_test, y_test)
+# 			}
 
-	save_to_json(RESULTS, "mkp")
-	save_to_csv(RESULTS, "mkp")
+# 	save_to_json(RESULTS, "mkp")
+# 	save_to_csv(RESULTS, "mkp")

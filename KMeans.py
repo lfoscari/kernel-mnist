@@ -2,12 +2,12 @@ from kmeans_pytorch import kmeans
 import math
 import torch
 
-def compress(x_train, y_train):
+def compress(x_train, y_train, k_func = math.sqrt):
 	# The idea is to split the training data according to the label and
 	# then find the clusters, this way we'll have clusters for each possible
 	# class, making it possible to label the centroids.
 
-	root = math.sqrt(x_train.shape[0])
+	root = k_func(x_train.shape[0])
 
 	# Sort x_train by label in y_train
 	_, indices = y_train.sort()
@@ -24,7 +24,7 @@ def compress(x_train, y_train):
 	bucket_sizes = []
 
 	for label, bucket in enumerate(label_split):
-		K = math.ceil(bucket.shape[0] / root)
+		K = max(2, int(bucket.shape[0] / root))
 		centroids[label] = kmeans(bucket, K)
 		bucket_sizes.append(K)
 
@@ -54,14 +54,19 @@ def compress(x_train, y_train):
 
 	return x_train_km, y_train_km
 
-
 if __name__ == "__main__":
-	from utils import RESULTS_TEMPLATE as RESULTS, EPOCHS, DEGREES, save_to_json, save_to_csv, polynomial
+	from utils import EPOCHS, DEGREES, RESULTS_TEMPLATE, save_to_csv, polynomial
 	from MultilabelKernelPerceptron import MultilabelKernelPerceptron
 	from MNIST import label_set, batch_data_iter
 	from tqdm import tqdm
 	from functools import partial
 	import time
+
+	k_funcs = {
+		"sqrt": math.sqrt,
+		"half": lambda x: x / 2,
+		"tenth": lambda x: x / 10,
+	}
 
 	TRAINING_SET_SIZE=60_000
 	TEST_SET_SIZE=10_000
@@ -69,37 +74,40 @@ if __name__ == "__main__":
 	(x_train, y_train), (x_test, y_test) = batch_data_iter(TRAINING_SET_SIZE, TEST_SET_SIZE)
 	print(f"Running Multi-label Kernel Perceptron with k-means sketching on {TRAINING_SET_SIZE}/{TEST_SET_SIZE} MNIST dataset")
 	
-	print("K-means approximation step...")
-	sketching_time = time.time()
-	
-	x_train_km, y_train_km = compress(x_train, y_train)
+	for compression, k_func in k_funcs.items():
+		RESULTS = RESULTS_TEMPLATE.copy()
 
-	sketching_time = time.time() - sketching_time
-	RESULTS["sketching_time"] = sketching_time
+		print(f"K-means approximation step with '{compression}' function...")
+		sketching_time = time.time()
+		
+		x_train_km, y_train_km = compress(x_train, y_train, k_func)
 
-	epochs_iteration = tqdm(EPOCHS)
+		sketching_time = time.time() - sketching_time
+		RESULTS["sketching_time"] = sketching_time
 
-	for epochs in epochs_iteration:
-		for degree in DEGREES:
-			epochs_iteration.set_description(f"Training with {epochs} epoch(s) and degree {degree}")
-			training_time = time.time()
+		epochs_iteration = tqdm(EPOCHS)
 
-			MKP = MultilabelKernelPerceptron(
-				partial(polynomial, degree=degree),
-				label_set,
-				epochs,
-				x_train_km,
-				y_train_km
-			)
+		for epochs in epochs_iteration:
+			for degree in DEGREES:
+				epochs_iteration.set_description(f"Training with {epochs} epoch(s) and degree {degree}")
+				training_time = time.time()
 
-			MKP.fit()
+				MKP = MultilabelKernelPerceptron(
+					partial(polynomial, degree=degree),
+					label_set,
+					epochs,
+					x_train_km,
+					y_train_km
+				)
 
-			training_time = time.time() - training_time
-			RESULTS["epochs"][epochs]["degree"][degree] = {
-				"training_time": training_time,
-				"training_error": MKP.predict(x_train_km, y_train_km),
-				"test_error": MKP.predict(x_test, y_test)
-			}
+				MKP.fit()
 
-	save_to_json(RESULTS, "kmmkp")
-	save_to_csv(RESULTS, "kmmkp")
+				training_time = time.time() - training_time
+				RESULTS["epochs"][epochs]["degree"][degree] = {
+					"training_time": training_time,
+					"training_error": MKP.predict(x_train_km, y_train_km),
+					"test_error": MKP.predict(x_test, y_test)
+				}
+
+		# save_to_json(RESULTS, "kmmkp")
+		save_to_csv(RESULTS, f"{compression}-kmmkp")

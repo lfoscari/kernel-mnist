@@ -1,4 +1,5 @@
 import torch
+import csv
 
 class Predictor():
 	def fit(self): pass
@@ -31,20 +32,11 @@ RESULTS_TEMPLATE = {
 			}
 		}
 		for e in EPOCHS
-	},
+	}
 }
 
-def save_to_json(data, file):
-	import json
-
-	dest = f"./results/json/{file}.json"
-	json.dump(data, open(dest, "w"), indent=True)
-	print(f"JSON results saved in {dest}")
-
 def save_to_csv(data, file):
-	import csv
-
-	with open(f"./results/csv/{file}.csv", "w", newline="") as csvfile:
+	with open(f"./results/{file}.csv", "w", newline="") as csvfile:
 		writer = csv.writer(csvfile)
 		header = ["epochs", "degree", "training_time", "training_error", "test_error"]
 			
@@ -53,5 +45,5 @@ def save_to_csv(data, file):
 		for (e, a) in data["epochs"].items():
 			for (d, b) in a["degree"].items():
 				writer.writerow((e, d, b["training_time"], b["training_error"], b["test_error"]))
-
+		
 		print(f"CSV results saved in {csvfile.name}")
