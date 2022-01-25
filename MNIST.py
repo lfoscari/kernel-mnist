@@ -1,3 +1,4 @@
+import torch
 from torchvision.transforms import ToTensor, Compose, Lambda
 from torch.utils.data import DataLoader
 from torchvision import datasets
@@ -25,6 +26,8 @@ test_data = datasets.MNIST(
 )
 
 def batch_data_iter(training_batch_size, test_batch_size):
+	torch.manual_seed(hash("Nicolò Cesa-Bianchi"))
+
 	train_dataloader = DataLoader(train_data, batch_size=training_batch_size, shuffle=True)
 	test_dataloader = DataLoader(test_data, batch_size=test_batch_size, shuffle=True)
 
