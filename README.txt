@@ -9,3 +9,7 @@ $ python3 KMeans.py
 
 Thanks to the kmeans-pytorch library the K-means implementation used can
 utilize the GPU, because it relies on PyTorch.
+
+TODO:
+    - Split sketching and perceptron
+    - Save sketched datasets
