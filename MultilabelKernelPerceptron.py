@@ -11,6 +11,7 @@ class MultilabelKernelPerceptron:
     epochs: int
     x_train: torch.Tensor
     y_train: torch.Tensor
+    device: torch.device
     model: torch.Tensor = None
 
     def __fit_label(self, label, kernel_matrix):
@@ -20,7 +21,7 @@ class MultilabelKernelPerceptron:
         The procedure in incremental in the number of epochs.
         """
 
-        alpha = torch.zeros(self.x_train.shape[0])
+        alpha = torch.zeros(self.x_train.shape[0], device=self.device)
         y_train_norm = sgn_label(self.y_train, label)
 
         for _ in range(self.epochs):
@@ -42,7 +43,7 @@ class MultilabelKernelPerceptron:
         To do this runs a perceptron for each provided label.
         """
 
-        self.model = torch.empty((len(self.labels), self.x_train.shape[0]))
+        self.model = torch.empty((len(self.labels), self.x_train.shape[0]), device=self.device)
         kernel_matrix = self.kernel(self.x_train, self.x_train.T)
 
         for label in self.labels:

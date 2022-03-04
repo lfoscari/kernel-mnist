@@ -1,3 +1,5 @@
+import json
+
 from kmeans_pytorch import kmeans
 from functools import partial
 from tqdm import tqdm
@@ -9,6 +11,13 @@ import os
 from MNIST import label_set, batch_data_iter
 from MultilabelKernelPerceptron import MultilabelKernelPerceptron
 from utils import *
+
+if torch.cuda.is_available():
+    DEVICE = torch.device("cuda")
+    torch.set_default_tensor_type(f"torch.cuda.FloatTensor")
+else:
+    DEVICE = torch.device("cpu")
+    torch.set_default_tensor_type(f"torch.FloatTensor")
 
 TRAINING_SET_SIZE = 60_000
 TEST_SET_SIZE = 10_000
@@ -50,7 +59,7 @@ def compress(xs, ys, target_size):
         centers_amount = max(2, bucket.shape[0] * target_size // xs.shape[0])
         # print(f"{target_size} => {centers_amount} ({label})\nOld ratio: {xs.shape[0] / bucket.shape[0]} - new ratio: {target_size / centers_amount}")
 
-        centroids[label] = kmeans(bucket, centers_amount)
+        centroids[label] = kmeans(bucket, centers_amount, device=DEVICE)
         bucket_sizes.append(centers_amount)
 
     # Create the new training set by joining the buckets,
@@ -60,7 +69,7 @@ def compress(xs, ys, target_size):
 
     # Shuffle everything
     torch.manual_seed(SEED)
-    permutation = torch.randperm(xs_km.shape[0])
+    permutation = torch.randperm(xs_km.shape[0], device=DEVICE)
     xs_km = xs_km[permutation]
     ys_km = ys_km[permutation]
 
@@ -86,12 +95,14 @@ def compress_dataset():
     Multiple reductions are tested. The results are saved in 'dataset'.
     """
 
+    sketching_time = {r: None for r in REDUCTIONS}
+
     if os.path.exists(DATASET_LOCATION):
-        print("Skipping sketching...")
+        print("Dataset already downloaded and compressed... skipping")
         return
 
     if os.path.exists(DATASET_TEMPORARY_LOCATION):
-        os.rmdir(DATASET_TEMPORARY_LOCATION)
+        shutil.rmtree(DATASET_TEMPORARY_LOCATION)
 
     os.mkdir(DATASET_TEMPORARY_LOCATION)
 
@@ -104,7 +115,10 @@ def compress_dataset():
 
     for target_size in REDUCTIONS:
         print(f"K-means approximation step with '{target_size}' function...")
+
+        start = time.time()
         x_train_km, y_train_km = compress(x_train, y_train, target_size)
+        sketching_time[target_size] = time.time() - start
 
         os.mkdir(f"{DATASET_TEMPORARY_LOCATION}/{target_size}")
 
@@ -112,6 +126,8 @@ def compress_dataset():
         torch.save(y_train_km, f"{DATASET_TEMPORARY_LOCATION}/{target_size}/y_train_km.pt")
 
     shutil.move(DATASET_TEMPORARY_LOCATION, DATASET_LOCATION)
+    json.dump(sketching_time, open(f"{RESULTS_LOCATION}/sketching-time.json", "w"), indent=4)
+
     print(f"Results saved in {DATASET_LOCATION}")
 
 
@@ -122,14 +138,14 @@ def run_tests():
     and training error.
     """
 
-    x_test = torch.load(f"{DATASET_LOCATION}/x_test.pt")
-    y_test = torch.load(f"{DATASET_LOCATION}/y_test.pt")
+    x_test = torch.load(f"{DATASET_LOCATION}/x_test.pt", map_location=DEVICE)
+    y_test = torch.load(f"{DATASET_LOCATION}/y_test.pt", map_location=DEVICE)
 
     print(f"Running Multi-label Kernel Perceptron with k-means sketching on MNIST dataset")
 
     for reduction in REDUCTIONS:
-        x_train_km = torch.load(f"{DATASET_LOCATION}/{reduction}/x_train_km.pt")
-        y_train_km = torch.load(f"{DATASET_LOCATION}/{reduction}/y_train_km.pt")
+        x_train_km = torch.load(f"{DATASET_LOCATION}/{reduction}/x_train_km.pt", map_location=DEVICE)
+        y_train_km = torch.load(f"{DATASET_LOCATION}/{reduction}/y_train_km.pt", map_location=DEVICE)
 
         results = RESULTS_TEMPLATE.copy()
         epochs_iteration = tqdm(EPOCHS)
@@ -144,7 +160,8 @@ def run_tests():
                     label_set,
                     epochs,
                     x_train_km,
-                    y_train_km
+                    y_train_km,
+                    DEVICE
                 )
 
                 perceptron.fit()
