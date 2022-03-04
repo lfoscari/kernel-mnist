@@ -1,16 +1,31 @@
-from MNIST import label_set
-from utils import SEED
 from kmeans_pytorch import kmeans
-import math
+from functools import partial
+from tqdm import tqdm
+import shutil
 import torch
+import time
+import os
+
+from MNIST import label_set, batch_data_iter
+from MultilabelKernelPerceptron import MultilabelKernelPerceptron
+from utils import *
+
+TRAINING_SET_SIZE = 60_000
+TEST_SET_SIZE = 10_000
+
+DATASET_TEMPORARY_LOCATION = "/tmp/kmmkp-dataset-sketching"
+DATASET_LOCATION = "./dataset"
+RESULTS_LOCATION = "./results"
+
+REDUCTIONS = [200, 1000, 1500]
 
 
-def compress(xs, ys, scaling=math.sqrt):
-    # The idea is to split the training data according to the label and
-    # then find the clusters, this way we'll have clusters for each possible
-    # class, making it possible to label the centroids.
-
-    size = scaling(xs.shape[0])
+def compress(xs, ys, target_size):
+    """
+    Split the training data according to the label and then find the clusters,
+    this way we'll have clusters for each possible class,
+    making it possible to label the centroids.
+    """
 
     # Sort x_train by label in y_train
     _, indices = ys.sort()
@@ -27,7 +42,14 @@ def compress(xs, ys, scaling=math.sqrt):
     bucket_sizes = []
 
     for label, bucket in enumerate(label_split):
-        centers_amount = max(2, int(bucket.shape[0] / size))
+        # If L is the amount of data-points with a particular label in the dataset with size N,
+        # we want to reduce the total size from N to N' we want the ratio L/N to stay
+        # roughly the same when reducing, therefore we ask that L'/N' =~ L/N, to find L', the
+        # new amount of data-points with the given label, we must solve for L':
+        #   L' = L * N' / N
+        centers_amount = max(2, bucket.shape[0] * target_size // xs.shape[0])
+        # print(f"{target_size} => {centers_amount} ({label})\nOld ratio: {xs.shape[0] / bucket.shape[0]} - new ratio: {target_size / centers_amount}")
+
         centroids[label] = kmeans(bucket, centers_amount)
         bucket_sizes.append(centers_amount)
 
@@ -58,37 +80,58 @@ def compress(xs, ys, scaling=math.sqrt):
     return xs_km, ys_km
 
 
-def run_tests():
-    from utils import EPOCHS, DEGREES, RESULTS_TEMPLATE, save_to_csv, polynomial
-    from MultilabelKernelPerceptron import MultilabelKernelPerceptron
-    from MNIST import batch_data_iter
-    from tqdm import tqdm
-    from functools import partial
-    import time
+def compress_dataset():
+    """
+    Loads the original dataset from PyTorch and applies a sketching method based on K-means.
+    Multiple reductions are tested. The results are saved in 'dataset'.
+    """
 
-    k_funcs = {
-        "sqrt": math.sqrt,
-        "half": lambda x: x / 2,
-        "tenth": lambda x: x / 10,
-    }
+    if os.path.exists(DATASET_LOCATION):
+        print("Skipping sketching...")
+        return
 
-    TRAINING_SET_SIZE = 60_000
-    TEST_SET_SIZE = 10_000
+    if os.path.exists(DATASET_TEMPORARY_LOCATION):
+        os.rmdir(DATASET_TEMPORARY_LOCATION)
+
+    os.mkdir(DATASET_TEMPORARY_LOCATION)
 
     (x_train, y_train), (x_test, y_test) = batch_data_iter(TRAINING_SET_SIZE, TEST_SET_SIZE)
-    print(f"Running Multi-label Kernel Perceptron with k-means sketching on {TRAINING_SET_SIZE}/{TEST_SET_SIZE} MNIST dataset")
 
-    for compression, k_func in k_funcs.items():
-        RESULTS = RESULTS_TEMPLATE.copy()
+    torch.save(x_test, f"{DATASET_TEMPORARY_LOCATION}/x_test.pt")
+    torch.save(y_test, f"{DATASET_TEMPORARY_LOCATION}/y_test.pt")
 
-        print(f"K-means approximation step with '{compression}' function...")
-        sketching_time = time.time()
+    print("Sketching dataset using K-means")
 
-        x_train_km, y_train_km = compress(x_train, y_train, k_func)
+    for target_size in REDUCTIONS:
+        print(f"K-means approximation step with '{target_size}' function...")
+        x_train_km, y_train_km = compress(x_train, y_train, target_size)
 
-        sketching_time = time.time() - sketching_time
-        RESULTS["sketching_time"] = sketching_time
+        os.mkdir(f"{DATASET_TEMPORARY_LOCATION}/{target_size}")
 
+        torch.save(x_train_km, f"{DATASET_TEMPORARY_LOCATION}/{target_size}/x_train_km.pt")
+        torch.save(y_train_km, f"{DATASET_TEMPORARY_LOCATION}/{target_size}/y_train_km.pt")
+
+    shutil.move(DATASET_TEMPORARY_LOCATION, DATASET_LOCATION)
+    print(f"Results saved in {DATASET_LOCATION}")
+
+
+def run_tests():
+    """
+    Run the kernel perceptron implementation on the MNIST dataset
+    using the sketched data-points, measure training time, test error
+    and training error.
+    """
+
+    x_test = torch.load(f"{DATASET_LOCATION}/x_test.pt")
+    y_test = torch.load(f"{DATASET_LOCATION}/y_test.pt")
+
+    print(f"Running Multi-label Kernel Perceptron with k-means sketching on MNIST dataset")
+
+    for reduction in REDUCTIONS:
+        x_train_km = torch.load(f"{DATASET_LOCATION}/{reduction}/x_train_km.pt")
+        y_train_km = torch.load(f"{DATASET_LOCATION}/{reduction}/y_train_km.pt")
+
+        results = RESULTS_TEMPLATE.copy()
         epochs_iteration = tqdm(EPOCHS)
 
         for epochs in epochs_iteration:
@@ -96,7 +139,7 @@ def run_tests():
                 epochs_iteration.set_description(f"Training with {epochs} epoch(s) and degree {degree}")
                 training_time = time.time()
 
-                MKP = MultilabelKernelPerceptron(
+                perceptron = MultilabelKernelPerceptron(
                     partial(polynomial, degree=degree),
                     label_set,
                     epochs,
@@ -104,17 +147,18 @@ def run_tests():
                     y_train_km
                 )
 
-                MKP.fit()
+                perceptron.fit()
 
                 training_time = time.time() - training_time
-                RESULTS["epochs"][epochs]["degree"][degree] = {
+                results["epochs"][epochs]["degree"][degree] = {
                     "training_time": training_time,
-                    "training_error": MKP.predict(x_train_km, y_train_km),
-                    "test_error": MKP.predict(x_test, y_test)
+                    "training_error": perceptron.error(x_train_km, y_train_km),
+                    "test_error": perceptron.error(x_test, y_test)
                 }
 
-        save_to_csv(RESULTS, f"{compression}-kmmkp")
+        save_to_csv(results, f"{RESULTS_LOCATION}/{reduction}-kmmkp.csv")
 
 
 if __name__ == "__main__":
+    compress_dataset()
     run_tests()
