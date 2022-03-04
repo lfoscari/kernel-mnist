@@ -29,8 +29,10 @@ class MultilabelKernelPerceptron:
 
             for index, (label_norm, kernel_row) in enumerate(zip(y_train_norm, kernel_matrix)):
                 alpha_update = sgn(torch.sum(alpha * y_train_norm * kernel_row, 0)) != label_norm
-                update = alpha_update or update
                 alpha[index] += alpha_update
+
+                if alpha_update:
+                    update = True
 
             if not update:
                 break

@@ -31,8 +31,9 @@ REDUCTIONS = [200, 1000, 1500]
 
 def compress(xs, ys, target_size):
     """
-    Split the training data according to the label and then find the clusters,
-    this way we'll have clusters for each possible class,
+    Split the training data according to the label into cluster
+    and then find the right number of centers for each cluster.
+    This way we'll have clusters for each possible class,
     making it possible to label the centroids.
     """
 
@@ -134,8 +135,7 @@ def compress_dataset():
 def run_tests():
     """
     Run the kernel perceptron implementation on the MNIST dataset
-    using the sketched data-points, measure training time, test error
-    and training error.
+    using the sketched data-points, measure training time, test error and training error.
     """
 
     x_test = torch.load(f"{DATASET_LOCATION}/x_test.pt", map_location=DEVICE)
