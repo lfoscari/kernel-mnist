@@ -1,10 +1,9 @@
-import json
-
 from kmeans_pytorch import kmeans
 from functools import partial
 from tqdm import tqdm
 import shutil
 import torch
+import json
 import time
 import os
 
@@ -14,10 +13,10 @@ from utils import *
 
 if torch.cuda.is_available():
     DEVICE = torch.device("cuda")
-    torch.set_default_tensor_type(f"torch.cuda.FloatTensor")
+    torch.set_default_tensor_type("torch.cuda.FloatTensor")
 else:
     DEVICE = torch.device("cpu")
-    torch.set_default_tensor_type(f"torch.FloatTensor")
+    torch.set_default_tensor_type("torch.FloatTensor")
 
 TRAINING_SET_SIZE = 60_000
 TEST_SET_SIZE = 10_000
@@ -31,10 +30,10 @@ REDUCTIONS = [200, 1000, 1500]
 
 def compress(xs, ys, target_size):
     """
-    Split the training data according to the label into cluster
+    Splits the training data according to the label into clusters
     and then find the right number of centers for each cluster.
-    This way we'll have clusters for each possible class,
-    making it possible to label the centroids.
+    Given that each cluster has an associated label, the resulting
+    centers will be classified with such label.
     """
 
     # Sort x_train by label in y_train
@@ -48,25 +47,23 @@ def compress(xs, ys, target_size):
     label_split = sorted_x_train.split(tuple(label_amount))
 
     # Compute centroid set for each bucket
-    centroids = {label: None for label in label_set}
+    centers = {label: None for label in label_set}
     bucket_sizes = []
 
     for label, bucket in enumerate(label_split):
         # If L is the amount of data-points with a particular label in the dataset with size N,
         # we want to reduce the total size from N to N' we want the ratio L/N to stay
-        # roughly the same when reducing, therefore we ask that L'/N' =~ L/N, to find L', the
-        # new amount of data-points with the given label, we must solve for L':
+        # roughly the same when reducing, therefore we ask that L' / N' =~ L / N, to find the
+        # new amount of data-points with the given label we must solve for L':
         #   L' = L * N' / N
+        # Pick at least 2 centers for cluster for good measure.
         centers_amount = max(2, bucket.shape[0] * target_size // xs.shape[0])
-        # print(f"{target_size} => {centers_amount} ({label})\nOld ratio: {xs.shape[0] / bucket.shape[0]} - new ratio: {target_size / centers_amount}")
-
-        centroids[label] = kmeans(bucket, centers_amount, device=DEVICE)
+        centers[label] = kmeans(bucket, centers_amount, device=DEVICE)
         bucket_sizes.append(centers_amount)
 
-    # Create the new training set by joining the buckets,
-    # labeling the data
-    xs_km = torch.cat([c for _, c in centroids.values()])
-    ys_km = torch.cat([torch.empty(K).fill_(label) for K, label in zip(bucket_sizes, label_set)])
+    # Create the new training set by joining the buckets, labeling the data
+    xs_km = torch.cat([c for _, c in centers.values()])
+    ys_km = torch.cat([torch.empty(centers_amount).fill_(label) for centers_amount, label in zip(bucket_sizes, label_set)])
 
     # Shuffle everything
     torch.manual_seed(SEED)
@@ -75,9 +72,9 @@ def compress(xs, ys, target_size):
     ys_km = ys_km[permutation]
 
     # Alternative approach
-    # This one simply sets a K and uses k-means on the whole dataset, then
-    # assigns to each centroid the most common label in its circle.
-    # Problem: it will be killed by the OS even with 10_000 examples
+    # This one simply sets a k and uses k-means on the whole dataset, then
+    # assigns to each center the most common label in its circle.
+    # Problem: it will be killed by the OS even with 5000 examples
 
     # x_train_km, indices = kmeans(x_train, math.ceil(root))
     #
@@ -153,8 +150,6 @@ def run_tests():
         for epochs in epochs_iteration:
             for degree in DEGREES:
                 epochs_iteration.set_description(f"Training with {epochs} epoch(s) and degree {degree}")
-                training_time = time.time()
-
                 perceptron = MultilabelKernelPerceptron(
                     partial(polynomial, degree=degree),
                     label_set,
@@ -164,9 +159,10 @@ def run_tests():
                     DEVICE
                 )
 
+                training_time = time.time()
                 perceptron.fit()
-
                 training_time = time.time() - training_time
+
                 results["epochs"][epochs]["degree"][degree] = {
                     "training_time": training_time,
                     "training_error": perceptron.error(x_train_km, y_train_km),

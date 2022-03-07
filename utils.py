@@ -24,7 +24,7 @@ RESULTS_TEMPLATE = {
 
 def sgn_label(a, b):
     """
-    Each label in the first argument is mapped to the 1 iff is equal
+    Maps each label in the first argument to the 1 iff it is equal
     to the corresponding label in the second argument, -1 otherwise.
     """
     return (a == b) * 2 - 1
@@ -47,7 +47,7 @@ def polynomial(a, b, c=1., degree=5.):
 
 def save_to_csv(data, filepath):
     """
-    Save the test results, structured as a RESULT_TEMPLATE,
+    Saves the test results, structured as a RESULT_TEMPLATE,
     in csv format to the specified filepath.
     """
 

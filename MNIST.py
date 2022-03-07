@@ -9,7 +9,6 @@ label_set = list(range(10))
 train_data = datasets.MNIST(
     root="data",
     train=True,
-    download=True,
     transform=Compose([
         ToTensor(),
         Lambda(lambda x: x.reshape((-1,)))
@@ -19,7 +18,6 @@ train_data = datasets.MNIST(
 test_data = datasets.MNIST(
     root="data",
     train=False,
-    download=True,
     transform=Compose([
         ToTensor(),
         Lambda(lambda x: x.reshape((-1,)))
@@ -28,6 +26,10 @@ test_data = datasets.MNIST(
 
 
 def batch_data_iter(training_batch_size, test_batch_size):
+    """
+    Loads the training and test examples into memory in batches
+    and shuffles them according to the SEED set in utils.
+    """
     torch.manual_seed(SEED)
 
     train_dataloader = DataLoader(train_data, batch_size=training_batch_size, shuffle=True)
