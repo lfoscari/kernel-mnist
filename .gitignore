@@ -1,6 +1,7 @@
 .vscode
 data
 dataset
+visualisation/output
 
 # JetBrains
 .idea

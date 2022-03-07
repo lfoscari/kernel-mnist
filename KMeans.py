@@ -7,9 +7,9 @@ import json
 import time
 import os
 
+from utils import *
 from MNIST import label_set, batch_data_iter
 from MultilabelKernelPerceptron import MultilabelKernelPerceptron
-from utils import *
 
 if torch.cuda.is_available():
     DEVICE = torch.device("cuda")
@@ -26,6 +26,8 @@ DATASET_LOCATION = "./dataset"
 RESULTS_LOCATION = "./results"
 
 REDUCTIONS = [200, 1000, 1500]
+
+torch.manual_seed(SEED)
 
 
 def compress(xs, ys, target_size):
@@ -63,10 +65,10 @@ def compress(xs, ys, target_size):
 
     # Create the new training set by joining the buckets, labeling the data
     xs_km = torch.cat([c for _, c in centers.values()])
-    ys_km = torch.cat([torch.empty(centers_amount).fill_(label) for centers_amount, label in zip(bucket_sizes, label_set)])
+    ys_km = torch.cat(
+        [torch.empty(centers_amount).fill_(label) for centers_amount, label in zip(bucket_sizes, label_set)])
 
     # Shuffle everything
-    torch.manual_seed(SEED)
     permutation = torch.randperm(xs_km.shape[0], device=DEVICE)
     xs_km = xs_km[permutation]
     ys_km = ys_km[permutation]
