@@ -59,6 +59,7 @@ let myPythonPackages =
 		kmeans
 
 		# Visualisation
+		jupyter
 		matplotlib
 		tikzplotlib
 		pandas

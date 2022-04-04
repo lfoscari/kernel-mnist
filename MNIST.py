@@ -6,10 +6,10 @@ from torchvision import datasets
 label_set = list(range(10))
 
 
-def batch_data_iter(training_batch_size, test_batch_size):
+def mnist_loader(training_batch_size, test_batch_size):
     """
-    Loads the training and test examples into memory in batches
-    and shuffles them according to the SEED set in utils.
+    Loads the training and test examples into memory in batches, reshapes the matrices into vectors and shuffles
+    them according to the SEED set in utils.
     """
 
     train_data = datasets.MNIST(

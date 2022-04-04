@@ -8,7 +8,7 @@ import time
 import os
 
 from utils import *
-from MNIST import label_set, batch_data_iter
+from MNIST import label_set, mnist_loader
 from MultilabelKernelPerceptron import MultilabelKernelPerceptron
 
 if torch.cuda.is_available():
@@ -32,10 +32,8 @@ torch.manual_seed(SEED)
 
 def compress(xs, ys, target_size):
     """
-    Splits the training data according to the label into clusters
-    and then find the right number of centers for each cluster.
-    Given that each cluster has an associated label, the resulting
-    centers will be classified with such label.
+    Splits the training data according to the label into clusters and then find the right number of centers for each
+    cluster. Given that each cluster has an associated label, the resulting centers will be classified with such label.
     """
 
     # Sort x_train by label in y_train
@@ -69,6 +67,7 @@ def compress(xs, ys, target_size):
         [torch.empty(centers_amount).fill_(label) for centers_amount, label in zip(bucket_sizes, label_set)])
 
     # Shuffle everything
+    # Interesting note: without this step the test error grows by almost an order of magnitude.
     permutation = torch.randperm(xs_km.shape[0], device=DEVICE)
     xs_km = xs_km[permutation]
     ys_km = ys_km[permutation]
@@ -82,7 +81,8 @@ def compress(xs, ys, target_size):
     #
     # y_train_km = torch.empty(x_train.shape[0])
     # for index in range(x_train_km.shape[0]):
-    # 	members = [point_index for point_index, center_index in enumerate(range(x_train.shape[0])) if center_index == index]
+    # 	members = [point_index for point_index, center_index in enumerate(range(x_train.shape[0]))
+    # 	    if center_index == index]
     # 	labels = y_train[members]
     # 	y_train_km[index] = max(set(labels), key=labels.count)
 
@@ -92,10 +92,10 @@ def compress(xs, ys, target_size):
 def compress_dataset():
     """
     Loads the original dataset from PyTorch and applies a sketching method based on K-means.
-    Multiple reductions are tested. The results are saved in 'dataset'.
+    Multiple reductions are tested. The results are saved in './dataset'.
     """
 
-    sketching_time = {r: None for r in REDUCTIONS}
+    sketching_time = {ts: None for ts in REDUCTIONS}
 
     if os.path.exists(DATASET_LOCATION):
         print("Dataset already downloaded and compressed... skipping")
@@ -106,7 +106,7 @@ def compress_dataset():
 
     os.mkdir(DATASET_TEMPORARY_LOCATION)
 
-    (x_train, y_train), (x_test, y_test) = batch_data_iter(TRAINING_SET_SIZE, TEST_SET_SIZE)
+    (x_train, y_train), (x_test, y_test) = mnist_loader(TRAINING_SET_SIZE, TEST_SET_SIZE)
 
     torch.save(x_test, f"{DATASET_TEMPORARY_LOCATION}/x_test.pt")
     torch.save(y_test, f"{DATASET_TEMPORARY_LOCATION}/y_test.pt")
@@ -133,8 +133,8 @@ def compress_dataset():
 
 def run_tests():
     """
-    Run the kernel perceptron implementation on the MNIST dataset
-    using the sketched data-points, measure training time, test error and training error.
+    Run the kernel perceptron implementation on the MNIST dataset using the sketched data-points, measure training
+    time, test error and training error.
     """
 
     x_test = torch.load(f"{DATASET_LOCATION}/x_test.pt", map_location=DEVICE)

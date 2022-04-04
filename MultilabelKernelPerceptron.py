@@ -17,7 +17,7 @@ class MultilabelKernelPerceptron:
     def __fit_label(self, label, kernel_matrix):
         """
         The core implementation of the perceptron with One vs. All encoding.
-        Given the label and the kernel matrix runs a kernel perceptron and computes the misses-counter α.
+        Given the label and the kernel matrix runs a kernel perceptron and computes the misses-counter alpha.
         The procedure in incremental in the number of epochs.
         """
 
