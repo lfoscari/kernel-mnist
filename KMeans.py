@@ -58,7 +58,7 @@ def compress(xs, ys, target_size):
         #   L' = L * N' / N
         # Pick at least 2 centers for cluster for good measure.
         centers_amount = max(2, bucket.shape[0] * target_size // xs.shape[0])
-        centers[label] = kmeans(bucket, centers_amount, device=DEVICE)
+        centers[label] = kmeans(bucket, centers_amount, device=DEVICE, seed=SEED)
         bucket_sizes.append(centers_amount)
 
     # Create the new training set by joining the buckets, labeling the data
