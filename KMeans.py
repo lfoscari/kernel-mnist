@@ -1,6 +1,4 @@
 from kmeans_pytorch import kmeans
-from functools import partial
-from tqdm import tqdm
 import shutil
 import torch
 import json
@@ -8,15 +6,8 @@ import time
 import os
 
 from utils import *
-from MNIST import label_set, mnist_loader
-from MultilabelKernelPerceptron import MultilabelKernelPerceptron
 
-if torch.cuda.is_available():
-    DEVICE = torch.device("cuda")
-    torch.set_default_tensor_type("torch.cuda.FloatTensor")
-else:
-    DEVICE = torch.device("cpu")
-    torch.set_default_tensor_type("torch.FloatTensor")
+from MNIST import label_set, mnist_loader
 
 TRAINING_SET_SIZE = 60_000
 TEST_SET_SIZE = 10_000
@@ -26,8 +17,6 @@ DATASET_LOCATION = "./dataset"
 RESULTS_LOCATION = "./results"
 
 REDUCTIONS = [200, 1000, 1500]
-
-torch.manual_seed(SEED)
 
 
 def compress(xs, ys, target_size):
@@ -129,51 +118,3 @@ def compress_dataset():
     json.dump(sketching_time, open(f"{RESULTS_LOCATION}/sketching-time.json", "w"), indent=4)
 
     print(f"Results saved in {DATASET_LOCATION}")
-
-
-def run_tests():
-    """
-    Run the kernel perceptron implementation on the MNIST dataset using the sketched data-points, measure training
-    time, test error and training error.
-    """
-
-    x_test = torch.load(f"{DATASET_LOCATION}/x_test.pt", map_location=DEVICE)
-    y_test = torch.load(f"{DATASET_LOCATION}/y_test.pt", map_location=DEVICE)
-
-    print(f"Running Multi-label Kernel Perceptron with k-means sketching on MNIST dataset")
-
-    for reduction in REDUCTIONS:
-        x_train_km = torch.load(f"{DATASET_LOCATION}/{reduction}/x_train_km.pt", map_location=DEVICE)
-        y_train_km = torch.load(f"{DATASET_LOCATION}/{reduction}/y_train_km.pt", map_location=DEVICE)
-
-        results = RESULTS_TEMPLATE.copy()
-        epochs_iteration = tqdm(EPOCHS)
-
-        for epochs in epochs_iteration:
-            for degree in DEGREES:
-                epochs_iteration.set_description(f"Training with {epochs} epoch(s) and degree {degree}")
-                perceptron = MultilabelKernelPerceptron(
-                    partial(polynomial, degree=degree),
-                    label_set,
-                    epochs,
-                    x_train_km,
-                    y_train_km,
-                    DEVICE
-                )
-
-                training_time = time.time()
-                perceptron.fit()
-                training_time = time.time() - training_time
-
-                results["epochs"][epochs]["degree"][degree] = {
-                    "training_time": training_time,
-                    "training_error": perceptron.error(x_train_km, y_train_km),
-                    "test_error": perceptron.error(x_test, y_test)
-                }
-
-        save_to_csv(results, f"{RESULTS_LOCATION}/{reduction}-kmmkp.csv")
-
-
-if __name__ == "__main__":
-    compress_dataset()
-    run_tests()

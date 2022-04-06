@@ -19,9 +19,6 @@ let tikzplotlib =
         version = "0.10.1";
         format = "pyproject";
 
-        # Had to fetch from Github directly because
-        # the Pipy version fails on setup.
-
         src = fetchFromGitHub {
             owner = "nschloe";
             repo = pname;
@@ -42,13 +39,26 @@ let tikzplotlib =
 
 let kmeans =
 	python39.pkgs.buildPythonPackage rec {
-		pname = "kmeans_pytorch";
-		version = "0.3";
-		src = python39.pkgs.fetchPypi {
-			inherit pname version;
-			sha256 = "c0e7279078f5592c0a80a836897efd1567c3275544e7d0ad844bff24053d8e78";
-		};
-		doCheck = false;
+        pname = "kmeans_pytorch";
+        version = "0.3";
+        format = "pyproject";
+
+        src = fetchFromGitHub {
+            owner = "subhadarship";
+            repo = pname;
+            rev = "v${version}";
+            sha256 = "sha256-FM2NSpi94hRMyoXlRYU+OfhE2gIT56cRGob0h/YGUO0=";
+        };
+
+        propagatedBuildInputs = with python39.pkgs; [
+            matplotlib
+            numpy
+            pillow
+            webcolors
+            flit-core
+        ];
+
+        doCheck = false;
 	}; in
 
 let myPythonPackages =

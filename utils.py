@@ -1,5 +1,12 @@
 import torch
 
+if torch.cuda.is_available():
+    DEVICE = torch.device("cuda")
+    torch.set_default_tensor_type("torch.cuda.FloatTensor")
+else:
+    DEVICE = torch.device("cpu")
+    torch.set_default_tensor_type("torch.FloatTensor")
+
 SEED = hash("Ford... you're turning into a penguin. Stop it.")
 
 EPOCHS = range(1, 11)
