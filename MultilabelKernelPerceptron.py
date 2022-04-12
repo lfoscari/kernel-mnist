@@ -21,23 +21,33 @@ class MultilabelKernelPerceptron:
         The procedure in incremental in the number of epochs.
         """
 
-        alpha = torch.zeros(self.x_train.shape[0], device=self.device)
+        alpha_means = torch.zeros((self.epochs, self.x_train.shape[0]), device=self.device)
         y_train_norm = sgn_label(self.y_train, label)
 
-        for _ in range(self.epochs):
-            update = False
+        for epoch in range(self.epochs):
+            alpha = alpha_means[max(0, epoch - 1)]
+            alpha_updates = torch.zeros((self.x_train.shape[0], self.x_train.shape[0]), device=self.device)
 
             for index, (label_norm, kernel_row) in enumerate(zip(y_train_norm, kernel_matrix)):
                 alpha_update = sgn(torch.sum(alpha * y_train_norm * kernel_row, 0)) != label_norm
-                alpha[index] += alpha_update
 
-                if alpha_update:
-                    update = True
+                alpha_updates[index] = alpha
+                alpha_updates[index][index] += alpha_update
 
-            if not update:
-                break
+            alpha_means[epoch] = torch.mean(alpha_updates, 0)
 
-        return alpha
+        # Might be possible to optimize the training error evaluation
+
+        alpha_updates_error = torch.zeros(self.epochs, device=self.device)
+        kernel_matrix = self.kernel(self.x_train, self.x_train.T)
+
+        for epoch, alpha in enumerate(alpha_means):
+            score = torch.sum(kernel_matrix * y_train_norm * alpha, 1)
+            training_error = float(torch.sum(sgn(score) != y_train_norm)) / y_train_norm.shape[0]
+            alpha_updates_error[epoch] = training_error
+
+        lowest_error = torch.argmin(alpha_updates_error)
+        return alpha_means[lowest_error]
 
     def fit(self):
         """
@@ -51,18 +61,25 @@ class MultilabelKernelPerceptron:
         for label in self.labels:
             self.model[label] = self.__fit_label(label, kernel_matrix)
 
-    def error(self, xs, ys):
+    def error(self, xs, ys, model=None, kernel_matrix=None):
         """
-        Evaluates prediction error on the given data and label sets using the fitted model.
+        Evaluates prediction error on the given data and label sets using the fitted or given model.
+        Is possible to provide a kernel_matrix for repeated evaluations on the same xs.
         Can be used to test training and test error alike.
         """
 
-        if self.model is None:
-            print("You must fit the model before evaluating the test error")
-            exit(-1)
+        if model is None:
+            model = self.model
 
-        kernel_matrix = self.kernel(xs, self.x_train.T)
-        scores = [torch.sum(kernel_matrix * sgn_label(self.y_train, label) * alpha, 1)
-                  for label, alpha in enumerate(self.model)]
-        predictions = torch.max(torch.stack(scores), 0)[1]
+        if model is None:
+            raise RuntimeError("You must fit or provide a model")
+
+        if kernel_matrix is None:
+            kernel_matrix = self.kernel(xs, self.x_train.T)
+
+        scores = torch.zeros((self.model.shape[0], xs.shape[0]), device=self.device)
+        for label, alpha in enumerate(model):
+            scores[label] = torch.sum(kernel_matrix * sgn_label(self.y_train, label) * alpha, 1)
+
+        predictions = torch.argmax(scores, 0)
         return float(torch.sum(predictions != ys) / ys.shape[0])
