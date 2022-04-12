@@ -1,4 +1,3 @@
-import torch
 from torchvision.transforms import ToTensor, Compose, Lambda
 from torch.utils.data import DataLoader
 from torchvision import datasets
