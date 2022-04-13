@@ -29,10 +29,8 @@ class MultilabelKernelPerceptron:
             alpha_updates = torch.zeros((self.x_train.shape[0], self.x_train.shape[0]), device=self.device)
 
             for index, (label_norm, kernel_row) in enumerate(zip(y_train_norm, kernel_matrix)):
-                alpha_update = sgn(torch.sum(alpha * y_train_norm * kernel_row, 0)) != label_norm
-
+                alpha[index] += sgn(torch.sum(alpha * y_train_norm * kernel_row, 0)) != label_norm
                 alpha_updates[index] = alpha
-                alpha_updates[index][index] += alpha_update
 
             alpha_means[epoch] = torch.mean(alpha_updates, 0)
 
