@@ -25,3 +25,4 @@ TODO:
     ])
 
 - Fill the confusion matrix
+- Minimum requirements?

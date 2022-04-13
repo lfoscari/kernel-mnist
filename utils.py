@@ -7,7 +7,7 @@ else:
     DEVICE = torch.device("cpu")
     torch.set_default_tensor_type("torch.FloatTensor")
 
-SEED = hash("Ford... you're turning into a penguin. Stop it.")
+SEED = hash("Ford... you're turning into a penguin. Stop it.") % 2 ** 32
 
 EPOCHS = range(1, 11)
 DEGREES = range(1, 7)

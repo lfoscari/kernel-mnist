@@ -1,11 +1,11 @@
-from torchvision.transforms import ToTensor, Compose, Lambda
+from torchvision.transforms import ToTensor, Compose, Lambda, RandomCrop, Normalize, RandomRotation
 from torch.utils.data import DataLoader
 from torchvision import datasets
 
 label_set = list(range(10))
 
 
-def mnist_loader(training_batch_size, test_batch_size):
+def mnist_loader(training_batch_size, test_batch_size, device=None):
     """
     Loads the training and test examples into memory in batches, reshapes the matrices into vectors and shuffles
     them according to the SEED set in utils.
@@ -16,8 +16,10 @@ def mnist_loader(training_batch_size, test_batch_size):
         train=True,
         download=True,
         transform=Compose([
+            RandomRotation(5, fill=(0, )),
+            RandomCrop(28, padding=2),
             ToTensor(),
-            Lambda(lambda x: x.reshape((-1,)))
+            Lambda(lambda x: x.reshape((-1, )))
         ])
     )
 
@@ -27,7 +29,7 @@ def mnist_loader(training_batch_size, test_batch_size):
         download=True,
         transform=Compose([
             ToTensor(),
-            Lambda(lambda x: x.reshape((-1,)))
+            Lambda(lambda x: x.reshape((-1, ))),
         ])
     )
 

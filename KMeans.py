@@ -52,8 +52,7 @@ def compress(xs, ys, target_size):
 
     # Create the new training set by joining the buckets, labeling the data
     xs_km = torch.cat([c for _, c in centers.values()])
-    ys_km = torch.cat(
-        [torch.empty(centers_amount).fill_(label) for centers_amount, label in zip(bucket_sizes, label_set)])
+    ys_km = torch.cat([torch.empty(centers_amount).fill_(label) for centers_amount, label in zip(bucket_sizes, label_set)])
 
     # Shuffle everything
     # Interesting note: without this step the test error grows by almost an order of magnitude.
@@ -95,15 +94,18 @@ def compress_dataset():
 
     os.mkdir(DATASET_TEMPORARY_LOCATION)
 
+    print("Loading original MNIST dataset")
     (x_train, y_train), (x_test, y_test) = mnist_loader(TRAINING_SET_SIZE, TEST_SET_SIZE)
 
     torch.save(x_test, f"{DATASET_TEMPORARY_LOCATION}/x_test.pt")
     torch.save(y_test, f"{DATASET_TEMPORARY_LOCATION}/y_test.pt")
 
+    del x_test, y_test
+
     print("Sketching dataset using K-means")
 
-    for target_size in REDUCTIONS:
-        print(f"K-means approximation step with '{target_size}' function...")
+    for target_size in REDUCTIONS[::-1]:
+        print(f"K-means approximation with target size {target_size}")
 
         start = time.time()
         x_train_km, y_train_km = compress(x_train, y_train, target_size)
@@ -113,6 +115,9 @@ def compress_dataset():
 
         torch.save(x_train_km, f"{DATASET_TEMPORARY_LOCATION}/{target_size}/x_train_km.pt")
         torch.save(y_train_km, f"{DATASET_TEMPORARY_LOCATION}/{target_size}/y_train_km.pt")
+
+        del x_train_km, y_train_km
+        gc.collect()
 
     shutil.move(DATASET_TEMPORARY_LOCATION, DATASET_LOCATION)
     json.dump(sketching_time, open(f"{RESULTS_LOCATION}/sketching-time.json", "w"), indent=4)
