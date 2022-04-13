@@ -1,18 +1,5 @@
 with import <nixpkgs> {};
 
-# let keops =
-# 	python39.pkgs.buildPythonPackage rec {
-# 		pname = "pykeops";
-# 		version = "1.5";
-# 		src = python39.pkgs.fetchPypi {
-# 			inherit pname version;
-# 			sha256 = "e7c846bb1fe48f89c4a9660b27a1216dd3478dc1399144e827d9223aa031acd9";
-# 		};
-# 		propagatedBuildInputs = [ pkgs.python3Packages.numpy pkgs.python3Packages.pytorch ];
-# 		doCheck = false;
-# 		meta = { };
-# 	}; in
-
 let tikzplotlib =
 	python39.pkgs.buildPythonPackage rec {
         pname = "tikzplotlib";
@@ -83,8 +70,11 @@ pkgs.mkShell {
 		myPythonPackages
 		jupyter
 	];
-}
 
-# scikit-learn
-# keops
-# cmake
+    shellHook = ''
+        export PS1='\[\e[0;38;5;129m\]\W \[\e[0m\]& \[\e[0m\]' 
+
+        echo "To repeat the experiments execute experiments.py."
+        echo "The results can be found in /results divided by sketching size."
+    '';
+}
