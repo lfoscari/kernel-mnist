@@ -25,4 +25,4 @@ TODO:
     ])
 
 - Fill the confusion matrix
-- Minimum requirements?
+- Minimum requirements? Maybe at least 5GB of free RAM.
