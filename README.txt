@@ -1,11 +1,16 @@
 Naive implementation of the multilabel kernel perceptron for the MNIST dataset.
 To speed-up computation a K-mean approach is used to reduce dimensionality
 without loosing too much information. The experiments can be replicated by
-running the following commands:
+running the following commands inside the cloned repository:
 
-$ git clone git@github.com:lfoscari/mnist-perceptron.git
 $ nix-shell
-$ python3 experiments.py
+& python3 experiments.py
+
+Note: the algorithm requires a pre-processing step to be completed, which
+requires a hefty amount of memory available (roughly +4GB of free RAM), as this
+step is fully reproducible, the results can already be found inside the
+'dataset' directory, if you wish to rerun the pre-processing just delete the
+folder and run the experiments.py executable.
 
 Thanks to the kmeans-pytorch library is possible to run achieve a k-means
 approximation of the dataset using a CUDA-compatible GPU.
