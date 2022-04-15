@@ -17,6 +17,9 @@ def run_tests():
     time, test error and training error.
     """
 
+    x_train = torch.load(f"{DATASET_LOCATION}/x_train.pt", map_location=DEVICE)
+    y_train = torch.load(f"{DATASET_LOCATION}/y_train.pt", map_location=DEVICE)
+
     x_test = torch.load(f"{DATASET_LOCATION}/x_test.pt", map_location=DEVICE)
     y_test = torch.load(f"{DATASET_LOCATION}/y_test.pt", map_location=DEVICE)
 
@@ -47,7 +50,8 @@ def run_tests():
 
                 results["epochs"][epochs]["degree"][degree] = {
                     "training_time": training_time,
-                    "training_error": perceptron.error(x_train_km, y_train_km),
+                    # The training error should be computed on x_train or x_train_km?
+                    "training_error": perceptron.error(x_train[:10_000], y_train[:10_000]),
                     "test_error": perceptron.error(x_test, y_test)
                 }
 

@@ -9,8 +9,8 @@ class MultilabelKernelPerceptron:
     kernel: Callable
     labels: list
     epochs: int
-    x_train: torch.Tensor
-    y_train: torch.Tensor
+    xs: torch.Tensor
+    ys: torch.Tensor
     device: torch.device
     model: torch.Tensor = None
 
@@ -21,12 +21,13 @@ class MultilabelKernelPerceptron:
         The procedure in incremental in the number of epochs.
         """
 
-        alpha_means = torch.zeros((self.epochs, self.x_train.shape[0]), device=self.device)
-        y_train_norm = sgn_label(self.y_train, label)
+        # Can be shown that averaging the alpha vectors is equivalent to averaging the predictors
+        alpha_means = torch.zeros((self.epochs, self.xs.shape[0]), device=self.device)
+        y_train_norm = sgn_label(self.ys, label)
 
         for epoch in range(self.epochs):
             alpha = alpha_means[max(0, epoch - 1)]
-            alpha_updates = torch.zeros((self.x_train.shape[0], self.x_train.shape[0]), device=self.device)
+            alpha_updates = torch.zeros((self.xs.shape[0], self.xs.shape[0]), device=self.device)
 
             for index, (label_norm, kernel_row) in enumerate(zip(y_train_norm, kernel_matrix)):
                 alpha[index] += sgn(torch.sum(alpha * y_train_norm * kernel_row, 0)) != label_norm
@@ -34,11 +35,9 @@ class MultilabelKernelPerceptron:
 
             alpha_means[epoch] = torch.mean(alpha_updates, 0)
 
-        # Might be possible to optimize the training error evaluation
-
         alpha_updates_error = torch.zeros(self.epochs, device=self.device)
-        kernel_matrix = self.kernel(self.x_train, self.x_train.T)
 
+        # Should I use the clusterized data or the original data for evaluating the training error?
         for epoch, alpha in enumerate(alpha_means):
             score = torch.sum(kernel_matrix * y_train_norm * alpha, 1)
             training_error = float(torch.sum(sgn(score) != y_train_norm)) / y_train_norm.shape[0]
@@ -53,8 +52,8 @@ class MultilabelKernelPerceptron:
         To do this runs a perceptron for each provided label.
         """
 
-        self.model = torch.empty((len(self.labels), self.x_train.shape[0]), device=self.device)
-        kernel_matrix = self.kernel(self.x_train, self.x_train.T)
+        self.model = torch.empty((len(self.labels), self.xs.shape[0]), device=self.device)
+        kernel_matrix = self.kernel(self.xs, self.xs.T)
 
         for label in self.labels:
             self.model[label] = self.__fit_label(label, kernel_matrix)
@@ -73,11 +72,11 @@ class MultilabelKernelPerceptron:
             raise RuntimeError("You must fit or provide a model")
 
         if kernel_matrix is None:
-            kernel_matrix = self.kernel(xs, self.x_train.T)
+            kernel_matrix = self.kernel(xs, self.xs.T)
 
         scores = torch.zeros((self.model.shape[0], xs.shape[0]), device=self.device)
         for label, alpha in enumerate(model):
-            scores[label] = torch.sum(kernel_matrix * sgn_label(self.y_train, label) * alpha, 1)
+            scores[label] = torch.sum(kernel_matrix * sgn_label(self.ys, label) * alpha, 1)
 
         predictions = torch.argmax(scores, 0)
         return float(torch.sum(predictions != ys) / ys.shape[0])

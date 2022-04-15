@@ -98,6 +98,9 @@ def compress_dataset():
     print("Loading original MNIST dataset")
     (x_train, y_train), (x_test, y_test) = mnist_loader(TRAINING_SET_SIZE, TEST_SET_SIZE)
 
+    torch.save(x_train, f"{DATASET_TEMPORARY_LOCATION}/x_train.pt")
+    torch.save(y_train, f"{DATASET_TEMPORARY_LOCATION}/y_train.pt")
+
     torch.save(x_test, f"{DATASET_TEMPORARY_LOCATION}/x_test.pt")
     torch.save(y_test, f"{DATASET_TEMPORARY_LOCATION}/y_test.pt")
 

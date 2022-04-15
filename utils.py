@@ -44,11 +44,11 @@ def sgn(a):
     return (a > 0) * 2 - 1
 
 
-def polynomial(a, b, c=1., degree=5.):
+def polynomial(a, b, degree=5.):
     """
     Calculates the polynomial kernel.
     """
-    return torch.float_power(a @ b + c, degree)
+    return torch.float_power(a @ b + 1, degree)
 
 
 def save_to_csv(data, filepath):
@@ -68,4 +68,4 @@ def save_to_csv(data, filepath):
             for (d, b) in a["degree"].items():
                 writer.writerow((e, d, b["training_time"], b["training_error"], b["test_error"]))
 
-        print(f"CSV results saved in {csvfile.name}")
+        print(f"results saved in {csvfile.name}")

@@ -25,4 +25,5 @@ TODO:
     ])
 
 - Fill the confusion matrix
-- Minimum requirements? Maybe at least 5GB of free RAM.
+- Minimum requirements? Maybe at least 5GB of free RAM for the k-means
+  compression, but the datasets can be archived and shipped with the project
