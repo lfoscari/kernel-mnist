@@ -3,6 +3,7 @@
 from functools import partial
 from tqdm import tqdm
 import time
+import gc
 
 from utils import *
 
@@ -54,6 +55,9 @@ def run_tests():
                     "training_error": perceptron.error(x_train[:10_000], y_train[:10_000]),
                     "test_error": perceptron.error(x_test, y_test)
                 }
+
+        del x_train_km, y_train_km
+        gc.collect()
 
         save_to_csv(results, f"{RESULTS_LOCATION}/{reduction}-kmmkp.csv")
 

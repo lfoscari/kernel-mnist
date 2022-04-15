@@ -11,19 +11,6 @@ Thanks to the kmeans-pytorch library is possible to run achieve a k-means
 approximation of the dataset using a CUDA-compatible GPU.
 
 TODO:
-- Try the following transformations:
-    train_transforms = Compose([
-        RandomRotation(5, fill=(0,)),
-        RandomCrop(28, padding = 2),
-        ToTensor(),
-        Normalize(mean = [mean], std = [std])
-    ])
-
-    test_transforms = Compose([
-        ToTensor(),
-        Normalize(mean = [mean], std = [std])
-    ])
-
 - Fill the confusion matrix
 - Minimum requirements? Maybe at least 5GB of free RAM for the k-means
   compression, but the datasets can be archived and shipped with the project
