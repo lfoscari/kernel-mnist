@@ -19,3 +19,5 @@ TODO:
 - Fill the confusion matrix
 - Minimum requirements? Maybe at least 5GB of free RAM for the k-means
   compression, but the datasets can be archived and shipped with the project
+- Check for contaminations between training and test set, which could explain
+  the big difference between training error on the original data and test error.
