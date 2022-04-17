@@ -1,11 +1,7 @@
 .vscode
 data
 visualisation/output
-
-dataset/*
-!dataset/200
-!dataset/1000
-!dataset/1500
+sketch
 
 # JetBrains
 .idea

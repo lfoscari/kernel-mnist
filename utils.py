@@ -9,9 +9,13 @@ else:
 
 SEED = hash("Ford... you're turning into a penguin. Stop it.") % 2 ** 32
 
+TRAINING_SET_SIZE = 60_000
+TEST_SET_SIZE = 10_000
+
 EPOCHS = range(1, 11)
 DEGREES = range(1, 7)
 
+RESULTS_LOCATION = "./results"
 RESULTS_TEMPLATE = {
     "epochs": {
         e: {
@@ -60,12 +64,12 @@ def save_to_csv(data, filepath):
 
     with open(filepath, "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
-        header = ["epochs", "degree", "training_time", "training_error", "test_error"]
+        header = ["epochs", "degree", "training_time", "training_error", "training_error_km", "test_error"]
 
         writer.writerow(header)
 
         for (e, a) in data["epochs"].items():
             for (d, b) in a["degree"].items():
-                writer.writerow((e, d, b["training_time"], b["training_error"], b["test_error"]))
+                writer.writerow((e, d, b["training_time"], b["training_error"], b["training_error_km"], b["test_error"]))
 
         print(f"results saved in {csvfile.name}")

@@ -5,7 +5,7 @@ from torchvision import datasets
 label_set = list(range(10))
 
 
-def mnist_loader(training_batch_size, test_batch_size, device=None):
+def mnist_loader(training_batch_size, test_batch_size):
     """
     Loads the training and test examples into memory in batches, reshapes the matrices into vectors and shuffles
     them according to the SEED set in utils.
@@ -20,6 +20,7 @@ def mnist_loader(training_batch_size, test_batch_size, device=None):
             RandomCrop(28, padding=2),
             ToTensor(),
             Lambda(lambda x: x.reshape((-1, )))
+            # Maybe add normalization removing the mean and dividing by the std
         ])
     )
 

@@ -10,12 +10,9 @@ from utils import *
 
 from MNIST import label_set, mnist_loader
 
-TRAINING_SET_SIZE = 60_000
-TEST_SET_SIZE = 10_000
-
 DATASET_TEMPORARY_LOCATION = "/tmp/kmmkp-dataset-sketching"
-DATASET_LOCATION = "./dataset"
-RESULTS_LOCATION = "./results"
+DATASET_LOCATION = "./sketch"
+TIME_MEASUREMENT_LOCATION = f"{RESULTS_LOCATION}/sketching-time.json"
 
 REDUCTIONS = [200, 1000, 1500]
 
@@ -28,13 +25,13 @@ def compress(xs, ys, target_size):
 
     # Sort x_train by label in y_train
     _, indices = ys.sort()
-    sorted_x_train = xs[indices]
+    sorted_xs = xs[indices]
 
     # Count the occurrences of each label
     label_amount = ys.bincount()
 
     # Split the training points in one of 10 buckets according to their label
-    label_split = sorted_x_train.split(tuple(label_amount))
+    label_split = sorted_xs.split(tuple(label_amount))
 
     # Compute centroid set for each bucket
     centers = {label: None for label in label_set}
@@ -56,7 +53,6 @@ def compress(xs, ys, target_size):
     ys_km = torch.cat([torch.empty(centers_amount).fill_(label) for centers_amount, label in zip(bucket_sizes, label_set)])
 
     # Shuffle everything
-    # Interesting note: without this step the test error grows by almost an order of magnitude.
     permutation = torch.randperm(xs_km.shape[0], device=DEVICE)
     xs_km = xs_km[permutation]
     ys_km = ys_km[permutation]
@@ -79,12 +75,11 @@ def compress(xs, ys, target_size):
 
 
 def compress_dataset():
-    """
+    f"""
     Loads the original dataset from PyTorch and applies a sketching method based on K-means.
-    Multiple reductions are tested. The results are saved in './dataset'.
+    Multiple reductions are tested. The results are saved in './{DATASET_LOCATION}' and the
+    time required to complete the sketching in './{TIME_MEASUREMENT_LOCATION}'.
     """
-
-    sketching_time = {ts: None for ts in REDUCTIONS}
 
     if os.path.exists(DATASET_LOCATION):
         print("Dataset already downloaded and compressed... skipping")
@@ -96,20 +91,15 @@ def compress_dataset():
     os.mkdir(DATASET_TEMPORARY_LOCATION)
 
     print("Loading original MNIST dataset")
+
     (x_train, y_train), (x_test, y_test) = mnist_loader(TRAINING_SET_SIZE, TEST_SET_SIZE)
-
-    torch.save(x_train, f"{DATASET_TEMPORARY_LOCATION}/x_train.pt")
-    torch.save(y_train, f"{DATASET_TEMPORARY_LOCATION}/y_train.pt")
-
-    torch.save(x_test, f"{DATASET_TEMPORARY_LOCATION}/x_test.pt")
-    torch.save(y_test, f"{DATASET_TEMPORARY_LOCATION}/y_test.pt")
-
-    del x_test, y_test
 
     print("Sketching dataset using K-means")
 
+    sketching_time = {ts: None for ts in REDUCTIONS}
+
     for target_size in REDUCTIONS[::-1]:
-        print(f"K-means approximation with target size {target_size}")
+        print(f"\tK-means approximation with target size {target_size}")
 
         start = time.time()
         x_train_km, y_train_km = compress(x_train, y_train, target_size)
@@ -124,6 +114,7 @@ def compress_dataset():
         gc.collect()
 
     shutil.move(DATASET_TEMPORARY_LOCATION, DATASET_LOCATION)
-    json.dump(sketching_time, open(f"{RESULTS_LOCATION}/sketching-time.json", "w"), indent=4)
+    json.dump(sketching_time, open(TIME_MEASUREMENT_LOCATION, "w"), indent=4)
 
     print(f"Results saved in {DATASET_LOCATION}")
+    print(f"Time measurements saved in {TIME_MEASUREMENT_LOCATION}")

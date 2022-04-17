@@ -8,8 +8,8 @@ import gc
 from utils import *
 
 from MultilabelKernelPerceptron import MultilabelKernelPerceptron
-from KMeans import compress_dataset, REDUCTIONS, DATASET_LOCATION, RESULTS_LOCATION
-from MNIST import label_set
+from KMeans import compress_dataset, REDUCTIONS, DATASET_LOCATION
+from MNIST import label_set, mnist_loader
 
 
 def run_tests():
@@ -18,11 +18,7 @@ def run_tests():
     time, test error and training error.
     """
 
-    x_train = torch.load(f"{DATASET_LOCATION}/x_train.pt", map_location=DEVICE)
-    y_train = torch.load(f"{DATASET_LOCATION}/y_train.pt", map_location=DEVICE)
-
-    x_test = torch.load(f"{DATASET_LOCATION}/x_test.pt", map_location=DEVICE)
-    y_test = torch.load(f"{DATASET_LOCATION}/y_test.pt", map_location=DEVICE)
+    (x_train, y_train), (x_test, y_test) = mnist_loader(TRAINING_SET_SIZE, TEST_SET_SIZE)
 
     print(f"Running Multi-label Kernel Perceptron with k-means sketching on MNIST dataset")
 
@@ -52,7 +48,9 @@ def run_tests():
                 results["epochs"][epochs]["degree"][degree] = {
                     "training_time": training_time,
                     # The training error should be computed on x_train or x_train_km?
-                    "training_error": perceptron.error(x_train[:10_000], y_train[:10_000]),
+                    # Probably x_train because otherwise training and test errors are not comparable.
+                    "training_error": perceptron.error(x_train, y_train),
+                    "training_error_km": perceptron.error(x_train_km, y_train_km),
                     "test_error": perceptron.error(x_test, y_test)
                 }
 
