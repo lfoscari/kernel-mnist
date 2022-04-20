@@ -16,8 +16,6 @@ def mnist_loader(training_batch_size, test_batch_size):
         train=True,
         download=True,
         transform=Compose([
-            RandomRotation(5, fill=(0, )),
-            RandomCrop(28, padding=2),
             ToTensor(),
             Lambda(lambda x: x.reshape((-1, )))
             # Maybe add normalization removing the mean and dividing by the std
