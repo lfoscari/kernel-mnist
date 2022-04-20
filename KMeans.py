@@ -12,7 +12,7 @@ from MNIST import label_set, mnist_loader
 
 DATASET_TEMPORARY_LOCATION = "/tmp/kmmkp-dataset-sketching"
 DATASET_LOCATION = "./sketch"
-TIME_MEASUREMENT_LOCATION = f"{RESULTS_LOCATION}/sketching-time.json"
+SKETCHING_TIME_LOCATION = f"{RESULTS_LOCATION}/sketching-time.json"
 
 REDUCTIONS = [200, 1000, 1500]
 
@@ -75,14 +75,14 @@ def compress(xs, ys, target_size):
 
 
 def compress_dataset():
-    f"""
+    """
     Loads the original dataset from PyTorch and applies a sketching method based on K-means.
-    Multiple reductions are tested. The results are saved in './{DATASET_LOCATION}' and the
-    time required to complete the sketching in './{TIME_MEASUREMENT_LOCATION}'.
+    Multiple reductions are tested. The results are saved in 'DATASET_LOCATION' and the
+    time required to complete the sketching in 'SKETCHING_TIME_LOCATION'.
     """
 
     if os.path.exists(DATASET_LOCATION):
-        print("Dataset already downloaded and compressed... skipping")
+        print("Dataset sketch is present... skipping")
         return
 
     if os.path.exists(DATASET_TEMPORARY_LOCATION):
@@ -114,7 +114,7 @@ def compress_dataset():
         gc.collect()
 
     shutil.move(DATASET_TEMPORARY_LOCATION, DATASET_LOCATION)
-    json.dump(sketching_time, open(TIME_MEASUREMENT_LOCATION, "w"), indent=4)
+    json.dump(sketching_time, open(SKETCHING_TIME_LOCATION, "w"), indent=4)
 
     print(f"Results saved in {DATASET_LOCATION}")
-    print(f"Time measurements saved in {TIME_MEASUREMENT_LOCATION}")
+    print(f"Time measurements saved in {SKETCHING_TIME_LOCATION}")
