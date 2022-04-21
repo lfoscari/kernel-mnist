@@ -23,6 +23,7 @@ RESULTS_TEMPLATE = {
                 d: {
                     "training_time": None,
                     "training_error": None,
+                    "training_error_km": None,
                     "test_error": None
                 }
                 for d in DEGREES

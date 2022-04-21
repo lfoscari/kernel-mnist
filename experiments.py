@@ -32,6 +32,8 @@ def run_tests():
         for epochs in epochs_iteration:
             for degree in DEGREES:
                 epochs_iteration.set_description(f"Training with {epochs} epoch(s) and degree {degree} [{reduction} examples]")
+
+                # Initialize an instance of the kernel perceptron training on the sketched data
                 perceptron = MultilabelKernelPerceptron(
                     partial(polynomial, degree=degree),
                     label_set,
@@ -47,8 +49,6 @@ def run_tests():
 
                 results["epochs"][epochs]["degree"][degree] = {
                     "training_time": training_time,
-                    # The training error should be computed on x_train or x_train_km?
-                    # Probably x_train because otherwise training and test errors are not comparable.
                     "training_error": perceptron.error(x_train, y_train),
                     "training_error_km": perceptron.error(x_train_km, y_train_km),
                     "test_error": perceptron.error(x_test, y_test)

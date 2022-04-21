@@ -24,7 +24,7 @@ class MultilabelKernelPerceptron:
         # Can be shown that averaging the alpha vectors is equivalent to averaging the predictors
         alpha_means = torch.zeros((self.epochs, self.xs.shape[0]), device=self.device)
 
-        # one-vs-all encoding
+        # one-vs-all encoding label transformation
         y_train_norm = sgn_label(self.ys, label)
 
         for epoch in range(self.epochs):
@@ -66,6 +66,7 @@ class MultilabelKernelPerceptron:
         kernel_matrix = self.kernel(self.xs, self.xs.T)
 
         for label in self.labels:
+            # Compute a binary predictor for each label (ova encoding)
             self.model[label] = self.__fit_label(label, kernel_matrix)
 
     def error(self, xs, ys, kernel_matrix=None):
