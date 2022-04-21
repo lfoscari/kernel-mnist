@@ -21,40 +21,50 @@ class MultilabelKernelPerceptron:
         The procedure in incremental in the number of epochs.
         """
 
-        # Can be shown that averaging the alpha vectors is equivalent to averaging the predictors
-        alpha_means = torch.zeros((self.epochs, self.xs.shape[0]), device=self.device)
+        # Predictor coefficients
+        alpha = torch.zeros(self.xs.shape[0], device=self.device)
+
+        # Sum of the predictors in the ensemble
+        alpha_sum = torch.zeros(self.xs.shape[0], device=self.device)
+
+        # L'idea è di tenere il predittore con training error minimo, l'errore di questo predittore
+        # e l'errore del predittore corrente, se quest'ultimo è minore dell'errore del predittore con trainin error minimo
+        # allora dichiaro il predittore corrente come predittore di training error minimo
+
+        # Prediction score for every element in the training set
+        # previously p-score
+        alpha_min_score = torch.zeros(self.xs.shape[0], device=self.device)
+
+        # Predictor with the lower training error
+        alpha_min = alpha
+
+        current_score = alpha_min_score
 
         # one-vs-all encoding label transformation
         y_train_norm = sgn_label(self.ys, label)
 
         for epoch in range(self.epochs):
-            # Start with the mean of the predictors of the previous epoch
-            alpha = alpha_means[max(0, epoch - 1)]
-
-            # Save every predictor used when classifying the training examples
-            alpha_updates = torch.zeros((self.xs.shape[0], self.xs.shape[0]), device=self.device)
 
             for index, (label_norm, kernel_row) in enumerate(zip(y_train_norm, kernel_matrix)):
-                alpha[index] += sgn(torch.sum(alpha * y_train_norm * kernel_row)) != label_norm
-                alpha_updates[index] = alpha
+                alpha_update = sgn(torch.sum(alpha * y_train_norm * kernel_row)) != label_norm
+                alpha[index] += alpha_update
 
-            # Compute the mean of the predictors for this epoch
-            alpha_means[epoch] = torch.mean(alpha_updates, 0)
+                alpha_sum += alpha
+                current_score += y_train_norm * kernel_row
 
-        alpha_updates_error = torch.zeros(self.epochs, device=self.device)
+                if update and torch.sum(sgn(alpha_min_score) != y_train_norm) > torch.sum(sgn(current_score) != y_train_norm):
+                    alpha_min = alpha
+                    alpha_min_score = current_score
 
-        # Should I use the clusterized data or the original data for evaluating the training error?
-        # Why the training error on the original data is much higher than the test error, when
-        # the training error on the clusterized data is only a bit higher?
-        for epoch, alpha in enumerate(alpha_means):
-            score = torch.sum(kernel_matrix * y_train_norm * alpha, 1)
-            training_error = float(torch.sum(sgn(score) != y_train_norm)) / y_train_norm.shape[0]
-            alpha_updates_error[epoch] = training_error
+                # if alpha_update and torch.sum(sgn(p_score) != y_train_norm) < torch.sum(sgn(p_score + y_train_norm * kernel_row) != y_train_norm):
+                #     alpha_min = alpha
+                
+                # p_score += y_train_norm * kernel_row
 
-        # Find the predictor with lowest training error in the ensemble
-        lowest_error = torch.argmin(alpha_updates_error)
-        
-        return alpha_means[lowest_error]
+
+        alpha_mean = alpha_sum / (self.epochs * kernel_matrix.shape[0])
+
+        return alpha_min
 
     def fit(self):
         """

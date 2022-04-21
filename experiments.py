@@ -49,7 +49,8 @@ def run_tests():
 
                 results["epochs"][epochs]["degree"][degree] = {
                     "training_time": training_time,
-                    "training_error": perceptron.error(x_train, y_train),
+                    # TODO: uncomment when experimenting
+                    "training_error": None, # perceptron.error(x_train, y_train),
                     "training_error_km": perceptron.error(x_train_km, y_train_km),
                     "test_error": perceptron.error(x_test, y_test)
                 }
