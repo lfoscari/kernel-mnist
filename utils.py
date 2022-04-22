@@ -21,10 +21,11 @@ RESULTS_TEMPLATE = {
         e: {
             "degree": {
                 d: {
-                    "training_time": None,
-                    "training_error": None,
-                    "training_error_km": None,
-                    "test_error": None
+                    # "training_error": None
+                    "training_error_km_min": None,
+                    "training_error_km_mean": None,
+                    "test_error_min": None,
+                    "test_error_mean": None
                 }
                 for d in DEGREES
             }
@@ -65,12 +66,12 @@ def save_to_csv(data, filepath):
 
     with open(filepath, "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
-        header = ["epochs", "degree", "training_time", "training_error", "training_error_km", "test_error"]
+        header = ["epochs", "degree", "training_time", "training_error_km_min", "training_error_km_mean", "test_error_min", "test_error_mean"]
 
         writer.writerow(header)
 
         for (e, a) in data["epochs"].items():
             for (d, b) in a["degree"].items():
-                writer.writerow((e, d, b["training_time"], b["training_error"], b["training_error_km"], b["test_error"]))
+                writer.writerow((e, d, b["training_time"], b["training_error_km_min"], b["training_error_km_mean"], b["test_error_min"], b["test_error_mean"]))
 
         print(f"results saved in {csvfile.name}")

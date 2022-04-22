@@ -47,12 +47,17 @@ def run_tests():
                 perceptron.fit()
                 training_time = time.time() - training_time
 
+                training_error_km = perceptron.error(x_train_km, y_train_km)
+                test_km = perceptron.error(x_test, y_test)
+
                 results["epochs"][epochs]["degree"][degree] = {
                     "training_time": training_time,
                     # TODO: uncomment when experimenting
-                    "training_error": None, # perceptron.error(x_train, y_train),
-                    "training_error_km": perceptron.error(x_train_km, y_train_km),
-                    "test_error": perceptron.error(x_test, y_test)
+                    # "training_error": None, # perceptron.error(x_train, y_train),
+                    "training_error_km_min": training_error_km["min"],
+                    "training_error_km_mean": training_error_km["mean"],
+                    "test_error_min": test_km["min"],
+                    "test_error_mean": test_km["mean"]
                 }
 
         del x_train_km, y_train_km

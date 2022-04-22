@@ -9,10 +9,13 @@ class MultilabelKernelPerceptron:
     kernel: Callable
     labels: list
     epochs: int
+    
     xs: torch.Tensor
     ys: torch.Tensor
     device: torch.device
-    model: torch.Tensor = None
+
+    model_min: torch.Tensor = None
+    model_mean: torch.Tensor = None
 
     def __fit_label(self, label, kernel_matrix):
         """
@@ -21,50 +24,47 @@ class MultilabelKernelPerceptron:
         The procedure in incremental in the number of epochs.
         """
 
+        # one-vs-all encoding label transformation
+        y_train_norm = sgn_label(self.ys, label)
+
         # Predictor coefficients
         alpha = torch.zeros(self.xs.shape[0], device=self.device)
 
         # Sum of the predictors in the ensemble
-        alpha_sum = torch.zeros(self.xs.shape[0], device=self.device)
-
-        # L'idea è di tenere il predittore con training error minimo, l'errore di questo predittore
-        # e l'errore del predittore corrente, se quest'ultimo è minore dell'errore del predittore con trainin error minimo
-        # allora dichiaro il predittore corrente come predittore di training error minimo
-
-        # Prediction score for every element in the training set
-        # previously p-score
-        alpha_min_score = torch.zeros(self.xs.shape[0], device=self.device)
+        alpha_sum = alpha.detach().clone()
 
         # Predictor with the lower training error
-        alpha_min = alpha
+        alpha_min = alpha.detach().clone()
 
-        current_score = alpha_min_score
+        # Keep track of the score of such preditor
+        alpha_score = torch.zeros(self.xs.shape[0], device=self.device)
+        alpha_min_score = alpha_score.detach().clone()
 
-        # one-vs-all encoding label transformation
-        y_train_norm = sgn_label(self.ys, label)
+        # Keep track of the training error of such preditor
+        alpha_error = int(torch.sum(sgn(alpha_score) != y_train_norm))
+        alpha_min_error = alpha_error
 
         for epoch in range(self.epochs):
-
             for index, (label_norm, kernel_row) in enumerate(zip(y_train_norm, kernel_matrix)):
                 alpha_update = sgn(torch.sum(alpha * y_train_norm * kernel_row)) != label_norm
                 alpha[index] += alpha_update
-
                 alpha_sum += alpha
-                current_score += y_train_norm * kernel_row
 
-                if update and torch.sum(sgn(alpha_min_score) != y_train_norm) > torch.sum(sgn(current_score) != y_train_norm):
-                    alpha_min = alpha
-                    alpha_min_score = current_score
+                if alpha_update:
+                    # for i in range(alpha_score.shape[0]):
+                    #     alpha_score[i] += label_norm * kernel_row[i]
 
-                # if alpha_update and torch.sum(sgn(p_score) != y_train_norm) < torch.sum(sgn(p_score + y_train_norm * kernel_row) != y_train_norm):
-                #     alpha_min = alpha
-                
-                # p_score += y_train_norm * kernel_row
+                    alpha_score += label_norm * kernel_row
+                    alpha_error = int(torch.sum(sgn(alpha_score) != y_train_norm))
 
+                    if alpha_error < alpha_min_error:
+                        alpha_min = alpha.detach().clone()
+                        alpha_min_score = alpha_score.detach().clone()
+                        alpha_min_error = alpha_error
 
         alpha_mean = alpha_sum / (self.epochs * kernel_matrix.shape[0])
 
-        return alpha_min
+        return alpha_min, alpha_mean
 
     def fit(self):
         """
@@ -72,16 +72,18 @@ class MultilabelKernelPerceptron:
         To do this runs a perceptron for each provided label.
         """
 
-        self.model = torch.empty((len(self.labels), self.xs.shape[0]), device=self.device)
         kernel_matrix = self.kernel(self.xs, self.xs.T)
 
-        for label in self.labels:
-            # Compute a binary predictor for each label (ova encoding)
-            self.model[label] = self.__fit_label(label, kernel_matrix)
+        self.model_min = torch.empty((len(self.labels), self.xs.shape[0]), device=self.device)
+        self.model_mean = torch.empty((len(self.labels), self.xs.shape[0]), device=self.device)
 
-    def error(self, xs, ys, kernel_matrix=None):
+        for label in self.labels:
+            # Compute a binary predictors for each label (ova encoding)
+            self.model_min[label], self.model_mean[label] = self.__fit_label(label, kernel_matrix)
+
+    def __error(self, xs, ys, model, kernel_matrix=None):
         """
-        Evaluates prediction error on the given data and label sets using the fitted or given model.
+        Evaluates prediction error on the given data and label sets using the given model.
         Is possible to provide a kernel_matrix for repeated evaluations on the same xs.
         Can be used to test training and test error alike.
         """
@@ -89,8 +91,8 @@ class MultilabelKernelPerceptron:
         if kernel_matrix is None:
             kernel_matrix = self.kernel(xs, self.xs.T)
 
-        scores = torch.zeros((self.model.shape[0], xs.shape[0]), device=self.device)
-        for label, alpha in enumerate(self.model):
+        scores = torch.zeros((model.shape[0], xs.shape[0]), device=self.device)
+        for label, alpha in enumerate(model):
             # Compute the prediction score for each of the 10 binary classifiers
             scores[label] = torch.sum(kernel_matrix * sgn_label(self.ys, label) * alpha, 1)
 
@@ -99,3 +101,13 @@ class MultilabelKernelPerceptron:
 
         # Compute error
         return float(torch.sum(predictions != ys) / ys.shape[0])
+
+    def error(self, xs, ys, kernel_matrix=None):
+        """
+        Evalute prediction error with the predictor achieving the minimum training error
+        and the mean predictor in the ensemble.
+        """
+        return {
+            "min": self.__error(xs, ys, self.model_min),
+            "mean": self.__error(xs, ys, self.model_mean)
+        }
