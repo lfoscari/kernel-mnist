@@ -14,9 +14,6 @@ DATASET_TEMPORARY_LOCATION = "/tmp/kmmkp-dataset-sketching"
 DATASET_LOCATION = "./sketch"
 SKETCHING_TIME_LOCATION = f"{RESULTS_LOCATION}/sketching-time.json"
 
-REDUCTIONS = [200, 1000, 1500]
-
-
 def compress(xs, ys, target_size):
     """
     Splits the training data according to the label into clusters and then find the right number of centers for each

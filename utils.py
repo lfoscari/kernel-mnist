@@ -14,24 +14,19 @@ TEST_SET_SIZE = 10_000
 
 EPOCHS = range(1, 11)
 DEGREES = range(1, 7)
+REDUCTIONS = [200, 1000, 1500]
 
 RESULTS_LOCATION = "./results"
 RESULTS_TEMPLATE = {
-    "epochs": {
-        e: {
-            "degree": {
-                d: {
-                    # "training_error": None
-                    "training_error_km_min": None,
-                    "training_error_km_mean": None,
-                    "test_error_min": None,
-                    "test_error_mean": None
-                }
-                for d in DEGREES
-            }
-        }
-        for e in EPOCHS
-    }
+    r: {
+        a: {
+            # "training_error": None
+            "training_error_km": None,
+            "test_error": None,
+            "epochs": None,
+            "degree": None
+        } for a in ["min", "mean"]
+    } for r in REDUCTIONS
 }
 
 
@@ -57,21 +52,21 @@ def polynomial(a, b, degree=5.):
     return torch.float_power(a @ b + 1, degree)
 
 
-def save_to_csv(data, filepath):
-    """
-    Saves the test results, structured as a RESULT_TEMPLATE, in csv format to the specified filepath.
-    """
+# def save_to_csv(data, filepath):
+#     """
+#     Saves the test results, structured as a RESULT_TEMPLATE, in csv format to the specified filepath.
+#     """
 
-    import csv
+#     import csv
 
-    with open(filepath, "w", newline="") as csvfile:
-        writer = csv.writer(csvfile)
-        header = ["epochs", "degree", "training_time", "training_error_km_min", "training_error_km_mean", "test_error_min", "test_error_mean"]
+#     with open(filepath, "w", newline="") as csvfile:
+#         writer = csv.writer(csvfile)
+#         header = ["epochs", "degree", "training_time", "training_error_km_min", "training_error_km_mean", "test_error_min", "test_error_mean"]
 
-        writer.writerow(header)
+#         writer.writerow(header)
 
-        for (e, a) in data["epochs"].items():
-            for (d, b) in a["degree"].items():
-                writer.writerow((e, d, b["training_time"], b["training_error_km_min"], b["training_error_km_mean"], b["test_error_min"], b["test_error_mean"]))
+#         for (e, a) in data["epochs"].items():
+#             for (d, b) in a["degree"].items():
+#                 writer.writerow((e, d, b["training_time"], b["training_error_km_min"], b["training_error_km_mean"], b["test_error_min"], b["test_error_mean"]))
 
-        print(f"results saved in {csvfile.name}")
+#         print(f"results saved in {csvfile.name}")
