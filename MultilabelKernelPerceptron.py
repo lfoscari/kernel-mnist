@@ -51,9 +51,6 @@ class MultilabelKernelPerceptron:
                 alpha_sum += alpha
 
                 if alpha_update:
-                    # for i in range(alpha_score.shape[0]):
-                    #     alpha_score[i] += label_norm * kernel_row[i]
-
                     alpha_score += label_norm * kernel_row
                     alpha_error = int(torch.sum(sgn(alpha_score) != y_train_norm))
 

@@ -22,3 +22,4 @@ TODO:
 - Research the major techniques applied to choose the k for k-means and
   briefly explain them, avoid implementing them unless very simplistic,
   because is out of the scope of the project.
+- Maybe run min and mean approaches seperatly, to compute the training time.
