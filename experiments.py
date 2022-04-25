@@ -13,6 +13,7 @@ from KMeans import compress_dataset, REDUCTIONS, DATASET_LOCATION
 from MNIST import label_set, mnist_loader
 from HyperparameterTuning import tune
 
+RESULTS_LOCATION = f"{RESULTS_DIR}/kernel-perceptron-results.json"
 
 def run_tests():
     """
@@ -67,7 +68,7 @@ def run_tests():
 
             progress.update(1)
 
-    json.dump(results, open(f"{RESULTS_LOCATION}/kernel-perceptron-results.csv", "w"), indent=2)
+    json.dump(results, open(RESULTS_LOCATION, "w"), indent=2)
 
 if __name__ == "__main__":
     torch.manual_seed(SEED)

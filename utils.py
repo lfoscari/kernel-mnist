@@ -14,9 +14,11 @@ TEST_SET_SIZE = 10_000
 
 EPOCHS = range(1, 11)
 DEGREES = range(1, 7)
-REDUCTIONS = [200, 1000, 1500]
 
-RESULTS_LOCATION = "./results"
+REDUCTIONS = [200, 1000, 1500]
+APPROACHES = ["min", "mean"]
+
+RESULTS_DIR = "./results"
 RESULTS_TEMPLATE = {
     r: {
         a: {
@@ -50,23 +52,3 @@ def polynomial(a, b, degree=5.):
     Calculates the polynomial kernel.
     """
     return torch.float_power(a @ b + 1, degree)
-
-
-# def save_to_csv(data, filepath):
-#     """
-#     Saves the test results, structured as a RESULT_TEMPLATE, in csv format to the specified filepath.
-#     """
-
-#     import csv
-
-#     with open(filepath, "w", newline="") as csvfile:
-#         writer = csv.writer(csvfile)
-#         header = ["epochs", "degree", "training_time", "training_error_km_min", "training_error_km_mean", "test_error_min", "test_error_mean"]
-
-#         writer.writerow(header)
-
-#         for (e, a) in data["epochs"].items():
-#             for (d, b) in a["degree"].items():
-#                 writer.writerow((e, d, b["training_time"], b["training_error_km_min"], b["training_error_km_mean"], b["test_error_min"], b["test_error_mean"]))
-
-#         print(f"results saved in {csvfile.name}")

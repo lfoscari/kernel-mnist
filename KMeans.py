@@ -10,9 +10,9 @@ from utils import *
 
 from MNIST import label_set, mnist_loader
 
-DATASET_TEMPORARY_LOCATION = "/tmp/kmmkp-dataset-sketching"
+DATASET_TEMPORARY_DIR = "/tmp/kmmkp-dataset-sketching"
 DATASET_LOCATION = "./sketch"
-SKETCHING_TIME_LOCATION = f"{RESULTS_LOCATION}/sketching-time.json"
+SKETCHING_TIME_LOCATION = f"{RESULTS_DIR}/sketching-time.json"
 
 def compress(xs, ys, target_size):
     """
@@ -82,10 +82,10 @@ def compress_dataset():
         print("Dataset sketch is present... skipping")
         return
 
-    if os.path.exists(DATASET_TEMPORARY_LOCATION):
-        shutil.rmtree(DATASET_TEMPORARY_LOCATION)
+    if os.path.exists(DATASET_TEMPORARY_DIR):
+        shutil.rmtree(DATASET_TEMPORARY_DIR)
 
-    os.mkdir(DATASET_TEMPORARY_LOCATION)
+    os.mkdir(DATASET_TEMPORARY_DIR)
 
     print("Loading original MNIST dataset")
 
@@ -102,15 +102,15 @@ def compress_dataset():
         x_train_km, y_train_km = compress(x_train, y_train, target_size)
         sketching_time[target_size] = time.time() - start
 
-        os.mkdir(f"{DATASET_TEMPORARY_LOCATION}/{target_size}")
+        os.mkdir(f"{DATASET_TEMPORARY_DIR}/{target_size}")
 
-        torch.save(x_train_km, f"{DATASET_TEMPORARY_LOCATION}/{target_size}/x_train_km.pt")
-        torch.save(y_train_km, f"{DATASET_TEMPORARY_LOCATION}/{target_size}/y_train_km.pt")
+        torch.save(x_train_km, f"{DATASET_TEMPORARY_DIR}/{target_size}/x_train_km.pt")
+        torch.save(y_train_km, f"{DATASET_TEMPORARY_DIR}/{target_size}/y_train_km.pt")
 
         del x_train_km, y_train_km
         gc.collect()
 
-    shutil.move(DATASET_TEMPORARY_LOCATION, DATASET_LOCATION)
+    shutil.move(DATASET_TEMPORARY_DIR, DATASET_LOCATION)
     json.dump(sketching_time, open(SKETCHING_TIME_LOCATION, "w"), indent=4)
 
     print(f"Results saved in {DATASET_LOCATION}")
