@@ -44,14 +44,19 @@ class MultilabelKernelPerceptron:
                 alpha_update = sgn(torch.sum(alpha * y_train_norm * kernel_row)) != label_norm
                 alpha[index] += alpha_update
 
-                if alpha_update:
-                    alpha_score += label_norm * kernel_row
-                    alpha_error = int(torch.sum(sgn(alpha_score) != y_train_norm))
+                if not alpha_update:
+                    continue
 
-                    if alpha_error < alpha_min_error:
-                        alpha_min = alpha.detach().clone()
-                        alpha_min_score = alpha_score.detach().clone()
-                        alpha_min_error = alpha_error
+                alpha_score += label_norm * kernel_row
+                alpha_error = int(torch.sum(sgn(alpha_score) != y_train_norm))
+
+                if alpha_error < alpha_min_error:
+                    alpha_min = alpha.detach().clone()
+                    alpha_min_score = alpha_score.detach().clone()
+                    alpha_min_error = alpha_error
+
+                if alpha_min_error == 0:
+                    break
 
         return alpha_min
 

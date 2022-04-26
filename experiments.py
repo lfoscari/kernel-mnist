@@ -30,7 +30,7 @@ def run_tests():
     results = RESULTS_TEMPLATE.copy()
 
     with tqdm(total=6) as progress:
-        for reduction, approach in product(REDUCTIONS, ["min", "mean"]):
+        for reduction, approach in product(REDUCTIONS, APPROACHES):
             x_train_km = torch.load(f"{DATASET_LOCATION}/{reduction}/x_train_km.pt", map_location=DEVICE)
             y_train_km = torch.load(f"{DATASET_LOCATION}/{reduction}/y_train_km.pt", map_location=DEVICE)
 
