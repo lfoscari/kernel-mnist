@@ -86,6 +86,51 @@ class MultilabelKernelPerceptron:
 
         return alpha_mean
 
+    def __fit_label_weight(self, label, kernel_matrix):
+        """
+        The core implementation of the perceptron with One vs. All encoding.
+        Given the label and the kernel matrix runs a kernel perceptron and returns
+        the classifier obtained by making an average of the classifiers
+        in the generated ensamble weighed on their training error.
+        """
+
+        # one-vs-all encoding label transformation
+        y_train_norm = sgn_label(self.ys, label)
+
+        # Predictor coefficients
+        alpha = torch.zeros(self.xs.shape[0], device=self.device)
+
+        # Keep track of the score of such preditor
+        alpha_score = torch.zeros(self.xs.shape[0], device=self.device)
+
+        # Keep track of the training error of such preditor
+        # To avoid extra calculations the error is kept absolute
+        alpha_error = int(torch.sum(sgn(alpha_score) != y_train_norm))
+
+        # Classifier of the weighted sum (initially zero)
+        alpha_weighted_sum = (self.xs.shape[0] - alpha_error) * alpha
+
+        # Sum of the accuracy for every classifier
+        alpha_total_accuracy = self.xs.shape[0] - alpha_error
+
+        for epoch in range(self.epochs):
+            for index, (label_norm, kernel_row) in enumerate(zip(y_train_norm, kernel_matrix)):
+                alpha_update = sgn(torch.sum(alpha * y_train_norm * kernel_row)) != label_norm
+                alpha[index] += alpha_update
+
+                if not alpha_update:
+                    continue
+
+                alpha_score += label_norm * kernel_row
+                alpha_error = int(torch.sum(sgn(alpha_score) != y_train_norm))
+
+                alpha_weighted_sum += (self.xs.shape[0] - alpha_error) * alpha
+                alpha_total_accuracy += self.xs.shape[0] - alpha_error
+
+        alpha_weighted_mean = alpha_weighted_sum / alpha_total_accuracy
+
+        return alpha_weighted_mean
+
     def fit(self):
         """
         Fits the model based on the training set.
@@ -96,11 +141,12 @@ class MultilabelKernelPerceptron:
         self.model = torch.empty((len(self.labels), self.xs.shape[0]), device=self.device)
 
         for label in self.labels:
-            # Compute a binary predictors for each label (ova encoding)
             if self.approach == "min":
                 self.model[label] = self.__fit_label_min(label, kernel_matrix)
             elif self.approach == "mean":
                 self.model[label] = self.__fit_label_mean(label, kernel_matrix)
+            elif self.approach == "weight":
+                self.model[label] = self.__fit_label_weight(label, kernel_matrix)
             else:
                 raise AttributeError(approach)
 

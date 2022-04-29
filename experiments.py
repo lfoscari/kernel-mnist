@@ -29,12 +29,13 @@ def run_tests():
 
     results = RESULTS_TEMPLATE.copy()
 
-    with tqdm(total=6) as progress:
+    with tqdm(total=len(REDUCTIONS) * len(APPROACHES)) as progress:
         for reduction, approach in product(REDUCTIONS, APPROACHES):
             x_train_km = torch.load(f"{DATASET_LOCATION}/{reduction}/x_train_km.pt", map_location=DEVICE)
             y_train_km = torch.load(f"{DATASET_LOCATION}/{reduction}/y_train_km.pt", map_location=DEVICE)
 
             progress.set_description(f"Tuning hyperparameters with reduction {reduction} and {approach} approach")
+            
             tuning_time = time.time()
             epochs, degree = tune(x_train, y_train, reduction, approach)
             tuning_time = time.time() - tuning_time

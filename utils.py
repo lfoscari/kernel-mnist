@@ -16,7 +16,7 @@ EPOCHS = range(1, 11)
 DEGREES = range(1, 7)
 
 REDUCTIONS = [200, 1000, 1500]
-APPROACHES = ["min", "mean"]
+APPROACHES = ["weight", "min", "mean"]
 
 RESULTS_DIR = "./results"
 RESULTS_TEMPLATE = {
@@ -27,7 +27,7 @@ RESULTS_TEMPLATE = {
             "test_error": None,
             "epochs": None,
             "degree": None
-        } for a in ["min", "mean"]
+        } for a in APPROACHES
     } for r in REDUCTIONS
 }
 
