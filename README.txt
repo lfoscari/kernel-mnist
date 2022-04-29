@@ -14,13 +14,3 @@ folder and run the experiments.py executable.
 
 Thanks to the kmeans-pytorch library is possible to run achieve a k-means
 approximation of the dataset using a CUDA-compatible GPU.
-
-TODO:
-- Fill the confusion matrix
-- Minimum requirements? Maybe at least 5GB of free RAM for the k-means
-  compression, but the datasets can be archived and shipped with the project
-- Research the major techniques applied to choose the k for k-means and
-  briefly explain them, avoid implementing them unless very simplistic,
-  because is out of the scope of the project.
-- Split min and mean classifier.
-- Tune the hyperparameters (epochs and degree) using a validation set.
