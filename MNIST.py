@@ -18,8 +18,7 @@ def mnist_loader(training_batch_size, test_batch_size):
         transform=Compose([
             ToTensor(),
             Lambda(lambda x: x.reshape((-1, )))
-            # Maybe add normalization removing the mean and dividing by the std
-        ])
+            ])
     )
 
     test_data = datasets.MNIST(

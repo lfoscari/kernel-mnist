@@ -131,6 +131,25 @@ class MultilabelKernelPerceptron:
 
         return alpha_weighted_mean
 
+    def __fit_label_last(self, label, kernel_matrix):
+        """
+        The core implementation of the perceptron with One vs. All encoding.
+        Given the label and the kernel matrix runs a kernel perceptron and returns
+        the last classifiers added to the ensemble
+        """
+
+        # one-vs-all encoding label transformation
+        y_train_norm = sgn_label(self.ys, label)
+
+        # Predictor coefficients
+        alpha = torch.zeros(self.xs.shape[0], device=self.device)
+
+        for epoch in range(self.epochs):
+            for index, (label_norm, kernel_row) in enumerate(zip(y_train_norm, kernel_matrix)):
+                alpha[index] += sgn(torch.sum(alpha * y_train_norm * kernel_row)) != label_norm
+
+        return alpha
+
     def fit(self):
         """
         Fits the model based on the training set.
@@ -147,6 +166,8 @@ class MultilabelKernelPerceptron:
                 self.model[label] = self.__fit_label_mean(label, kernel_matrix)
             elif self.approach == "weight":
                 self.model[label] = self.__fit_label_weight(label, kernel_matrix)
+            elif self.approach == "last":
+                self.model[label] = self.__fit_label_last(label, kernel_matrix)
             else:
                 raise AttributeError(approach)
 
