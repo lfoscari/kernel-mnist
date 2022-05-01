@@ -1,3 +1,4 @@
+[mean]
 Computing kernel matrix...
 60000it [19:26, 51.43it/s]
 Training the perceptron on the full MNIST dataset
@@ -9,3 +10,16 @@ Test error: 0.016100000590085983
 real	130m43.401s
 user	441m2.483s
 sys	12m11.940s
+
+
+[last]
+Kernel matrix already computed... skipping
+Training the perceptron on the full MNIST dataset
+Training time: 6291.055382013321
+Computing test error...
+10000it [03:18, 50.34it/s]
+Test error: 0.018200000748038292
+
+real	108m16.860s
+user	353m13.167s
+sys	11m13.163s
