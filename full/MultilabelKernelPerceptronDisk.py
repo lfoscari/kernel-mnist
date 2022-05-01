@@ -6,13 +6,16 @@ import time
 import os
 import gc
 
+import sys
+sys.path.append("../")
+
 from MultilabelKernelPerceptron import MultilabelKernelPerceptron
 from MNIST import label_set, mnist_loader
 from utils import *
 
 EPOCHS = 6
 DEGREE = 4
-KERNEL_MATRIX_DIR = "visualization/kernelmatrix"
+KERNEL_MATRIX_DIR = "kernelmatrix"
 MODEL_FILENAME = "full-mnist-model.pt"
 
 
@@ -75,10 +78,12 @@ class MultilabelKernelPerceptronDisk(MultilabelKernelPerceptron):
 
 def matrix(x_train):
 	if os.path.exists(KERNEL_MATRIX_DIR):
-        print("Kernel matrix already computed... skipping")
-        return
-	
-	print(f"Computing kernel matrix ({KERNEL_MATRIX_DIR})...")
+		print("Kernel matrix already computed... skipping")
+		return
+
+	os.mkdir(KERNEL_MATRIX_DIR)
+
+	print(f"Computing kernel matrix...")
 	for index, example in tqdm(enumerate(x_train)):
 		kernel_row = polynomial(example, x_train.T, degree=DEGREE)
 		torch.save(kernel_row, f"{KERNEL_MATRIX_DIR}/{index}.pt")
@@ -86,10 +91,9 @@ def matrix(x_train):
 
 def train(x_train, y_train):
 	if os.path.exists(MODEL_FILENAME):
-        print("Model already fitted... skipping")
-        return None
+		print("Model already fitted... skipping")
+		return None
 
-	print(f"Training the model...")
 	perceptron = MultilabelKernelPerceptronDisk(
 		partial(polynomial, degree=DEGREE),
 		label_set,
@@ -104,7 +108,7 @@ def train(x_train, y_train):
 	training_time = time.time()
 
 	perceptron.fit()
-	
+
 	print("Training time:", time.time() - training_time)
 	torch.save(perceptron.model, MODEL_FILENAME)
 	return perceptron.model
@@ -114,6 +118,7 @@ def error(model, x_train, y_train, x_test, y_test):
 	if model is None:
 		model = torch.load(MODEL_FILENAME)
 
+	print("Computing test error...")
 	perceptron = MultilabelKernelPerceptronDisk(
 		partial(polynomial, degree=DEGREE),
 		label_set,
@@ -125,7 +130,7 @@ def error(model, x_train, y_train, x_test, y_test):
 	)
 
 	perceptron.model = model
-	print("Test error:", perceptron.error(x_test, y_test))	
+	print("Test error:", perceptron.error(x_test, y_test))
 
 if __name__ == "__main__":
 	torch.manual_seed(SEED)
