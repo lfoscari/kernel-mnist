@@ -15,7 +15,7 @@ from utils import *
 
 EPOCHS = 6
 DEGREE = 4
-APPROACH = "last"
+APPROACH = "min"
 KERNEL_MATRIX_DIR = "kernelmatrix"
 MODEL_FILENAME = f"full-mnist-model-{APPROACH}.pt"
 
@@ -43,34 +43,6 @@ class MultilabelKernelPerceptronDisk(MultilabelKernelPerceptron):
 				self.model[label] = self.__fit_label_last(label, kernel_matrix)
 			else:
 				raise AttributeError(approach)
-
-	def __fit_label_mean(self, label, kernel_matrix):
-		y_train_norm = sgn_label(self.ys, label)
-
-		alpha = torch.zeros(self.xs.shape[0], device=self.device)
-		alpha_sum = alpha.detach().clone()
-
-		for epoch in range(self.epochs):
-			for index, (label_norm, kernel_row) in enumerate(zip(y_train_norm, kernel_matrix)):
-				alpha_update = sgn(torch.sum(alpha * y_train_norm * kernel_row)) != label_norm
-				alpha[index] += alpha_update
-				alpha_sum += alpha
-
-				del kernel_row
-
-		alpha_mean = alpha_sum / (self.epochs * self.xs.shape[0])
-		return alpha_mean
-
-	def __fit_label_last(self, label, kernel_matrix):
-		y_train_norm = sgn_label(self.ys, label)
-		alpha = torch.zeros(self.xs.shape[0], device=self.device)
-
-		for epoch in range(self.epochs):
-			for index, (label_norm, kernel_row) in enumerate(zip(y_train_norm, kernel_matrix)):
-				alpha[index] += sgn(torch.sum(alpha * y_train_norm * kernel_row)) != label_norm
-				del kernel_row
-
-		return alpha
 
 	def error(self, xs, ys, kernel_matrix=None):
 		predictions = torch.zeros(xs.shape[0], device=self.device)
