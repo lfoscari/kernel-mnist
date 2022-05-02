@@ -16,8 +16,10 @@ from utils import *
 EPOCHS = 6
 DEGREE = 4
 APPROACH = "min"
-KERNEL_MATRIX_DIR = "kernelmatrix"
 MODEL_FILENAME = f"full-mnist-model-{APPROACH}.pt"
+
+KERNEL_MATRIX_TEMPORARY_DIR = "/tmp/kmmp-kernelmatrix"
+KERNEL_MATRIX_DIR = "kernelmatrix"
 
 
 def kernel_matrix_generator():
@@ -34,13 +36,13 @@ class MultilabelKernelPerceptronDisk(MultilabelKernelPerceptron):
 
 		for label in self.labels:
 			if self.approach == "min":
-				self.model[label] = self.__fit_label_min(label, kernel_matrix)
+				self.model[label] = super().__fit_label_min(label, kernel_matrix)
 			elif self.approach == "mean":
-				self.model[label] = self.__fit_label_mean(label, kernel_matrix)
+				self.model[label] = super().__fit_label_mean(label, kernel_matrix)
 			elif self.approach == "weight":
-				self.model[label] = self.__fit_label_weight(label, kernel_matrix)
+				self.model[label] = super().__fit_label_weight(label, kernel_matrix)
 			elif self.approach == "last":
-				self.model[label] = self.__fit_label_last(label, kernel_matrix)
+				self.model[label] = super().__fit_label_last(label, kernel_matrix)
 			else:
 				raise AttributeError(approach)
 
@@ -65,12 +67,14 @@ def matrix(x_train):
 		print("Kernel matrix already computed... skipping")
 		return
 
-	os.mkdir(KERNEL_MATRIX_DIR)
+	os.mkdir(KERNEL_MATRIX_TEMPORARY_DIR)
 
 	print(f"Computing kernel matrix...")
 	for index, example in tqdm(enumerate(x_train)):
 		kernel_row = polynomial(example, x_train.T, degree=DEGREE)
-		torch.save(kernel_row, f"{KERNEL_MATRIX_DIR}/{index}.pt")
+		torch.save(kernel_row, f"{KERNEL_MATRIX_TEMPORARY_DIR}/{index}.pt")
+
+	shutil.move(KERNEL_MATRIX_TEMPORARY_DIR, KERNEL_MATRIX_DIR)
 
 
 def train(x_train, y_train):
