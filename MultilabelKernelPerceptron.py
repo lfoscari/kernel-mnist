@@ -181,9 +181,9 @@ class MultilabelKernelPerceptron:
         if kernel_matrix is None:
             kernel_matrix = self.kernel(xs, self.xs.T)
 
-        ys_norm = torch.stack([sgn_label(self.ys, label) for label in label_set])
+        ys_norm = torch.stack([sgn_label(self.ys, label) for label in self.labels])
         scores = torch.zeros((self.model.shape[0], xs.shape[0]), device=self.device)
-        
+
         for label, alpha in enumerate(self.model):
             # Compute the prediction score for each of the 10 binary classifiers
             scores[label] = torch.sum(kernel_matrix * ys_norm[label] * alpha, 1)
