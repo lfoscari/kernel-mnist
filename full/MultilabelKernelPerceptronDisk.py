@@ -36,13 +36,13 @@ class MultilabelKernelPerceptronDisk(MultilabelKernelPerceptron):
 
 		for label in self.labels:
 			if self.approach == "min":
-				self.model[label] = super().__fit_label_min(label, kernel_matrix)
+				self.model[label] = super().__fit_label_min(self, label, kernel_matrix)
 			elif self.approach == "mean":
-				self.model[label] = super().__fit_label_mean(label, kernel_matrix)
+				self.model[label] = super().__fit_label_mean(self, label, kernel_matrix)
 			elif self.approach == "weight":
-				self.model[label] = super().__fit_label_weight(label, kernel_matrix)
+				self.model[label] = super().__fit_label_weight(self, label, kernel_matrix)
 			elif self.approach == "last":
-				self.model[label] = super().__fit_label_last(label, kernel_matrix)
+				self.model[label] = super().__fit_label_last(self, label, kernel_matrix)
 			else:
 				raise AttributeError(approach)
 
