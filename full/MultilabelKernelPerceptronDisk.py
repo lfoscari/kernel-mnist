@@ -14,9 +14,9 @@ from MultilabelKernelPerceptron import MultilabelKernelPerceptron
 from MNIST import label_set, mnist_loader
 from utils import *
 
-EPOCHS = 6
-DEGREE = 4
-APPROACH = "min"
+EPOCHS = 5
+DEGREE = 3
+APPROACH = "weight"
 MODEL_FILENAME = f"full-mnist-model-{APPROACH}.pt"
 
 KERNEL_MATRIX_TEMPORARY_DIR = "/tmp/kmmp-kernelmatrix"
@@ -126,6 +126,8 @@ def error(model, x_train, y_train, x_test, y_test):
 if __name__ == "__main__":
 	torch.manual_seed(SEED)
 	(x_train, y_train), (x_test, y_test) = mnist_loader(TRAINING_SET_SIZE, TEST_SET_SIZE)
+
+	print(f"[{APPROACH}]")
 
 	matrix(x_train)
 	model = train(x_train, y_train) # 9448
