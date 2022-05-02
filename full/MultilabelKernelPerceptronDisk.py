@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from functools import partial
 from tqdm import tqdm
 import torch
@@ -29,6 +30,7 @@ def kernel_matrix_generator():
 		index = (index + 1) % TRAINING_SET_SIZE
 
 
+@dataclass
 class MultilabelKernelPerceptronDisk(MultilabelKernelPerceptron):
 	def fit(self):
 		kernel_matrix = kernel_matrix_generator()
@@ -36,15 +38,16 @@ class MultilabelKernelPerceptronDisk(MultilabelKernelPerceptron):
 
 		for label in self.labels:
 			if self.approach == "min":
-				self.model[label] = super(MultilabelKernelPerceptronDisk, self).__fit_label_min(label, kernel_matrix)
+				self.model[label] = self._fit_label_min(label, kernel_matrix)
 			elif self.approach == "mean":
-				self.model[label] = super(MultilabelKernelPerceptronDisk, self).__fit_label_mean(label, kernel_matrix)
+				self.model[label] = self._fit_label_mean(label, kernel_matrix)
 			elif self.approach == "weight":
-				self.model[label] = super(MultilabelKernelPerceptronDisk, self).__fit_label_weight(label, kernel_matrix)
+				self.model[label] = self._fit_label_weight(label, kernel_matrix)
 			elif self.approach == "last":
-				self.model[label] = super(MultilabelKernelPerceptronDisk, self).__fit_label_last(label, kernel_matrix)
+				self.model[label] = self._fit_label_last(label, kernel_matrix)
 			else:
 				raise AttributeError(approach)
+
 
 	def error(self, xs, ys, kernel_matrix=None):
 		predictions = torch.zeros(xs.shape[0], device=self.device)

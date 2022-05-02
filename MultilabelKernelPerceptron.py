@@ -15,7 +15,7 @@ class MultilabelKernelPerceptron:
     device: torch.device
     model: torch.Tensor = None
 
-    def __fit_label_min(self, label, kernel_matrix):
+    def _fit_label_min(self, label, kernel_matrix):
         """
         The core implementation of the perceptron with One vs. All encoding.
         Given the label and the kernel matrix runs a kernel perceptron and returns
@@ -60,7 +60,7 @@ class MultilabelKernelPerceptron:
 
         return alpha_min
 
-    def __fit_label_mean(self, label, kernel_matrix):
+    def _fit_label_mean(self, label, kernel_matrix):
         """
         The core implementation of the perceptron with One vs. All encoding.
         Given the label and the kernel matrix runs a kernel perceptron and returns
@@ -86,7 +86,7 @@ class MultilabelKernelPerceptron:
 
         return alpha_mean
 
-    def __fit_label_weight(self, label, kernel_matrix):
+    def _fit_label_weight(self, label, kernel_matrix):
         """
         The core implementation of the perceptron with One vs. All encoding.
         Given the label and the kernel matrix runs a kernel perceptron and returns
@@ -131,7 +131,7 @@ class MultilabelKernelPerceptron:
 
         return alpha_weighted_mean
 
-    def __fit_label_last(self, label, kernel_matrix):
+    def _fit_label_last(self, label, kernel_matrix):
         """
         The core implementation of the perceptron with One vs. All encoding.
         Given the label and the kernel matrix runs a kernel perceptron and returns
@@ -161,13 +161,13 @@ class MultilabelKernelPerceptron:
 
         for label in self.labels:
             if self.approach == "min":
-                self.model[label] = self.__fit_label_min(label, kernel_matrix)
+                self.model[label] = self._fit_label_min(label, kernel_matrix)
             elif self.approach == "mean":
-                self.model[label] = self.__fit_label_mean(label, kernel_matrix)
+                self.model[label] = self._fit_label_mean(label, kernel_matrix)
             elif self.approach == "weight":
-                self.model[label] = self.__fit_label_weight(label, kernel_matrix)
+                self.model[label] = self._fit_label_weight(label, kernel_matrix)
             elif self.approach == "last":
-                self.model[label] = self.__fit_label_last(label, kernel_matrix)
+                self.model[label] = self._fit_label_last(label, kernel_matrix)
             else:
                 raise AttributeError(approach)
 
