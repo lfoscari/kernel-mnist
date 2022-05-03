@@ -3,10 +3,8 @@ import shutil
 import json
 import time
 import os
-import gc
 
 from utils import *
-
 from MNIST import label_set, mnist_loader
 
 DATASET_TEMPORARY_DIR = "/tmp/kmmkp-dataset-sketching"
@@ -54,20 +52,6 @@ def compress(xs, ys, target_size):
     xs_km = xs_km[permutation]
     ys_km = ys_km[permutation]
 
-    # Alternative approach
-    # This one simply sets a k and uses k-means on the whole dataset, then
-    # assigns to each center the most common label in its circle.
-    # Problem: it will be killed by the OS even with 5000 examples
-
-    # x_train_km, indices = kmeans(x_train, math.ceil(root))
-    #
-    # y_train_km = torch.empty(x_train.shape[0])
-    # for index in range(x_train_km.shape[0]):
-    # 	members = [point_index for point_index, center_index in enumerate(range(x_train.shape[0]))
-    # 	    if center_index == index]
-    # 	labels = y_train[members]
-    # 	y_train_km[index] = max(set(labels), key=labels.count)
-
     return xs_km, ys_km
 
 
@@ -106,9 +90,6 @@ def compress_dataset():
 
         torch.save(x_train_km, f"{DATASET_TEMPORARY_DIR}/{target_size}/x_train_km.pt")
         torch.save(y_train_km, f"{DATASET_TEMPORARY_DIR}/{target_size}/y_train_km.pt")
-
-        del x_train_km, y_train_km
-        gc.collect()
 
     shutil.move(DATASET_TEMPORARY_DIR, DATASET_LOCATION)
     json.dump(sketching_time, open(SKETCHING_TIME_LOCATION, "w"), indent=4)
