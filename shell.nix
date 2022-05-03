@@ -70,14 +70,13 @@ let myPythonPackages =
 pkgs.mkShell {
 	buildInputs = with pkgs; [
 		myPythonPackages
-		jupyter
 	];
 
     shellHook = ''
-        export PS1='\[\e[0;38;5;129m\]\W \[\e[0m\]& \[\e[0m\]' 
+        export PS1='\[\e[0;38;5;129m\]\W \[\e[0m\]& \[\e[0m\]'
 
         echo ""
         echo "To repeat the experiments execute experiments.py."
-        echo "The results can be found in /results divided by sketching size."
+        echo "The results can be found in ./results."
     '';
 }
