@@ -15,8 +15,8 @@ from MNIST import label_set, mnist_loader
 from utils import *
 
 EPOCHS = 5
-DEGREE = 3
-APPROACH = "weight"
+DEGREE = 2
+APPROACH = "last"
 MODEL_FILENAME = f"full-mnist-model-{APPROACH}.pt"
 
 KERNEL_MATRIX_TEMPORARY_DIR = "/tmp/kmmp-kernelmatrix"
