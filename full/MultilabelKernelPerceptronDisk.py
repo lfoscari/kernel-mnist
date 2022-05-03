@@ -17,7 +17,7 @@ from utils import *
 EPOCHS = 5
 DEGREE = 2
 APPROACH = "last"
-MODEL_FILENAME = f"full-mnist-model-{APPROACH}.pt"
+MODEL_LOCATION = f"models/{APPROACH}.pt"
 
 KERNEL_MATRIX_TEMPORARY_DIR = "/tmp/kmmp-kernelmatrix"
 KERNEL_MATRIX_DIR = "kernelmatrix"
@@ -81,9 +81,9 @@ def matrix(x_train):
 
 
 def train(x_train, y_train):
-	if os.path.exists(MODEL_FILENAME):
+	if os.path.exists(MODEL_LOCATION):
 		print("Model already fitted... skipping")
-		return None
+		return torch.load(MODEL_LOCATION)
 
 	perceptron = MultilabelKernelPerceptronDisk(
 		partial(polynomial, degree=DEGREE),
@@ -101,15 +101,14 @@ def train(x_train, y_train):
 	perceptron.fit()
 
 	print("Training time:", time.time() - training_time)
-	torch.save(perceptron.model, MODEL_FILENAME)
+
+	torch.save(perceptron.model, MODEL_LOCATION)
 	return perceptron.model
 
 
 def error(model, x_train, y_train, x_test, y_test):
-	if model is None:
-		model = torch.load(MODEL_FILENAME)
-
 	print("Computing test error...")
+
 	perceptron = MultilabelKernelPerceptronDisk(
 		partial(polynomial, degree=DEGREE),
 		label_set,
@@ -130,5 +129,5 @@ if __name__ == "__main__":
 	print(f"[{APPROACH}]")
 
 	matrix(x_train)
-	model = train(x_train, y_train) # 9448
+	model = train(x_train, y_train)
 	error(model, x_train, y_train, x_test, y_test)
