@@ -47,8 +47,7 @@ def compress(xs, ys, target_size):
 
     # Create the new training set by joining the buckets, labeling the data
     xs_km = torch.cat([c for _, c in centers.values()])
-    ys_km = torch.cat(
-        [torch.empty(centers_amount).fill_(label) for centers_amount, label in zip(bucket_sizes, label_set)])
+    ys_km = torch.cat([torch.empty(centers_amount).fill_(label) for centers_amount, label in zip(bucket_sizes, label_set)])
 
     # Shuffle everything
     permutation = torch.randperm(xs_km.shape[0], device=DEVICE)

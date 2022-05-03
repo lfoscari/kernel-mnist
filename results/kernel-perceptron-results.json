@@ -1,104 +1,104 @@
 {
   "200": {
     "min": {
-      "training_error_km": 0.005154639016836882,
-      "test_error": 0.12690000236034393,
+      "training_error_km": 0.0,
+      "test_error": 0.11509999632835388,
       "epochs": 4,
-      "degree": 2,
-      "tuning_time": 17.388531923294067,
-      "training_time": 0.26981329917907715
+      "degree": 3,
+      "tuning_time": 21.22153377532959,
+      "training_time": 0.3084526062011719
     },
     "mean": {
-      "training_error_km": 0.0,
-      "test_error": 0.12250000238418579,
-      "epochs": 5,
-      "degree": 2,
-      "tuning_time": 18.512546062469482,
-      "training_time": 0.34427690505981445
-    },
-    "weight": {
-      "training_error_km": 0.010309278033673763,
-      "test_error": 0.13619999587535858,
-      "epochs": 4,
-      "degree": 2,
-      "tuning_time": 19.166958808898926,
-      "training_time": 0.2836339473724365
-    },
-    "last": {
-      "training_error_km": 0.0,
-      "test_error": 0.12319999933242798,
+      "training_error_km": 0.005154639016836882,
+      "test_error": 0.12020000070333481,
       "epochs": 3,
       "degree": 4,
-      "tuning_time": 18.033677577972412,
-      "training_time": 0.1999986171722412
+      "tuning_time": 22.585646629333496,
+      "training_time": 0.24449682235717773
+    },
+    "weight": {
+      "training_error_km": 0.025773195549845695,
+      "test_error": 0.14000000059604645,
+      "epochs": 5,
+      "degree": 4,
+      "tuning_time": 22.737961292266846,
+      "training_time": 0.42484140396118164
+    },
+    "last": {
+      "training_error_km": 0.005154639016836882,
+      "test_error": 0.11909999698400497,
+      "epochs": 4,
+      "degree": 3,
+      "tuning_time": 21.00142526626587,
+      "training_time": 0.3134162425994873
     }
   },
   "1000": {
     "min": {
-      "training_error_km": 0.00200803205370903,
-      "test_error": 0.06989999860525131,
-      "epochs": 4,
-      "degree": 4,
-      "tuning_time": 100.32426238059998,
-      "training_time": 1.4321115016937256
+      "training_error_km": 0.0,
+      "test_error": 0.07800000160932541,
+      "epochs": 5,
+      "degree": 3,
+      "tuning_time": 126.50156259536743,
+      "training_time": 2.147249937057495
     },
     "mean": {
-      "training_error_km": 0.001004016026854515,
-      "test_error": 0.06530000269412994,
-      "epochs": 8,
-      "degree": 4,
-      "tuning_time": 105.60260367393494,
-      "training_time": 3.0435776710510254
+      "training_error_km": 0.0,
+      "test_error": 0.07129999995231628,
+      "epochs": 7,
+      "degree": 3,
+      "tuning_time": 130.54255390167236,
+      "training_time": 3.152930498123169
     },
     "weight": {
       "training_error_km": 0.01305220928043127,
-      "test_error": 0.08089999854564667,
+      "test_error": 0.08510000258684158,
       "epochs": 7,
-      "degree": 3,
-      "tuning_time": 106.62619948387146,
-      "training_time": 2.56026029586792
+      "degree": 2,
+      "tuning_time": 132.6187732219696,
+      "training_time": 3.192958116531372
     },
     "last": {
-      "training_error_km": 0.0,
-      "test_error": 0.06830000132322311,
-      "epochs": 6,
-      "degree": 4,
-      "tuning_time": 99.91160774230957,
-      "training_time": 2.1774964332580566
+      "training_error_km": 0.001004016026854515,
+      "test_error": 0.0737999975681305,
+      "epochs": 5,
+      "degree": 5,
+      "tuning_time": 123.16987538337708,
+      "training_time": 2.190506935119629
     }
   },
   "1500": {
     "min": {
       "training_error_km": 0.0,
-      "test_error": 0.05939999967813492,
-      "epochs": 6,
-      "degree": 4,
-      "tuning_time": 160.48024249076843,
-      "training_time": 3.1527860164642334
+      "test_error": 0.0617000013589859,
+      "epochs": 7,
+      "degree": 3,
+      "tuning_time": 199.22842025756836,
+      "training_time": 4.660770416259766
     },
     "mean": {
       "training_error_km": 0.0,
-      "test_error": 0.06080000102519989,
-      "epochs": 8,
+      "test_error": 0.06040000170469284,
+      "epochs": 10,
       "degree": 3,
-      "tuning_time": 167.0658814907074,
-      "training_time": 4.765584468841553
+      "tuning_time": 203.06860876083374,
+      "training_time": 7.2172040939331055
     },
     "weight": {
-      "training_error_km": 0.010033444501459599,
-      "test_error": 0.07270000129938126,
-      "epochs": 10,
-      "degree": 2,
-      "tuning_time": 166.26745510101318,
-      "training_time": 5.854849576950073
+      "training_error_km": 0.012709029950201511,
+      "test_error": 0.07559999823570251,
+      "epochs": 5,
+      "degree": 4,
+      "tuning_time": 207.04884481430054,
+      "training_time": 3.6359598636627197
     },
     "last": {
       "training_error_km": 0.0,
-      "test_error": 0.05999999865889549,
-      "epochs": 5,
-      "degree": 4,
-      "tuning_time": 166.89562344551086,
-      "training_time": 2.877579689025879
+      "test_error": 0.06199999898672104,
+      "epochs": 6,
+      "degree": 3,
+      "tuning_time": 194.4853436946869,
+      "training_time": 4.089978933334351
     }
   }
 }

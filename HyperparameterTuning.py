@@ -30,4 +30,4 @@ def tune(xs, ys, reduction, approach):
             validation_error = perceptron.error(x_val, y_val)
             results.append((validation_error, epochs, degree))
 
-    return min(results, key=lambda x: x[0])[1:]
+    return min(results, key=lambda x: int(x[0] * 1000))[1:]
