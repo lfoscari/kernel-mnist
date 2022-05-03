@@ -96,7 +96,7 @@ def compress_dataset():
 
     sketching_time = {ts: None for ts in REDUCTIONS}
 
-    for target_size in REDUCTIONS[::-1]:
+    for target_size in REDUCTIONS:
         print(f"\tK-means approximation with target size {target_size}")
 
         start = time.time()

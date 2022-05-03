@@ -70,6 +70,7 @@ let myPythonPackages =
 pkgs.mkShell {
 	buildInputs = with pkgs; [
 		myPythonPackages
+        jupyter
 	];
 
     shellHook = ''

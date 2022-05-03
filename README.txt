@@ -4,7 +4,7 @@ without loosing too much information. The experiments can be replicated by
 running the following commands inside the cloned repository:
 
 $ nix-shell
-& python3 experiments.py
+& ./experiments.py
 
 When writing new tests or experimenting is imperative to set the seed for the
 RNG in PyTorch, because otherwise the model will be scrambled. Simply add the
