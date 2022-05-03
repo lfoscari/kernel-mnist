@@ -19,7 +19,7 @@ class MultilabelKernelPerceptron:
         """
         The core implementation of the perceptron with One vs. All encoding.
         Given the label and the kernel matrix runs a kernel perceptron and returns
-        the classifier with minimum error among all classifiers in the generated ensamble.
+        the classifier with minimum error among all classifiers in the generated ensemble.
         """
 
         # one-vs-all encoding label transformation
@@ -28,14 +28,13 @@ class MultilabelKernelPerceptron:
         # Predictor coefficients
         alpha = torch.zeros(self.xs.shape[0], device=self.device)
 
+        # Keep track of the score of the predictor
+        alpha_score = torch.zeros(self.xs.shape[0], device=self.device)
+
         # Predictor with the lower training error
         alpha_min = alpha.detach().clone()
 
-        # Keep track of the score of such preditor
-        alpha_score = torch.zeros(self.xs.shape[0], device=self.device)
-        alpha_min_score = alpha_score.detach().clone()
-
-        # Keep track of the training error of such preditor
+        # Keep track of the training error of such predictor
         alpha_error = int(torch.sum(sgn(alpha_score) != y_train_norm))
         alpha_min_error = alpha_error
 
@@ -52,7 +51,6 @@ class MultilabelKernelPerceptron:
 
                 if alpha_error < alpha_min_error:
                     alpha_min = alpha.detach().clone()
-                    alpha_min_score = alpha_score.detach().clone()
                     alpha_min_error = alpha_error
 
                 if alpha_min_error == 0:
@@ -64,7 +62,7 @@ class MultilabelKernelPerceptron:
         """
         The core implementation of the perceptron with One vs. All encoding.
         Given the label and the kernel matrix runs a kernel perceptron and returns
-        the mean classifier among all classifiers in the generated ensamble.
+        the mean classifier among all classifiers in the generated ensemble.
         """
 
         # one-vs-all encoding label transformation
@@ -91,7 +89,7 @@ class MultilabelKernelPerceptron:
         The core implementation of the perceptron with One vs. All encoding.
         Given the label and the kernel matrix runs a kernel perceptron and returns
         the classifier obtained by making an average of the classifiers
-        in the generated ensamble weighed on their training error.
+        in the generated ensemble weighed on their training error.
         """
 
         # one-vs-all encoding label transformation
@@ -100,10 +98,10 @@ class MultilabelKernelPerceptron:
         # Predictor coefficients
         alpha = torch.zeros(self.xs.shape[0], device=self.device)
 
-        # Keep track of the score of such preditor
+        # Keep track of the score of such predictor
         alpha_score = torch.zeros(self.xs.shape[0], device=self.device)
 
-        # Keep track of the training error of such preditor
+        # Keep track of the training error of such predictor
         # To avoid extra calculations the error is kept absolute
         alpha_error = int(torch.sum(sgn(alpha_score) != y_train_norm))
 
@@ -169,7 +167,7 @@ class MultilabelKernelPerceptron:
             elif self.approach == "last":
                 self.model[label] = self._fit_label_last(label, kernel_matrix)
             else:
-                raise AttributeError(approach)
+                raise AttributeError(self.approach)
 
     def error(self, xs, ys, kernel_matrix=None):
         """

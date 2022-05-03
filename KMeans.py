@@ -1,6 +1,5 @@
 from kmeans_pytorch import kmeans
 import shutil
-import torch
 import json
 import time
 import os
@@ -13,6 +12,7 @@ from MNIST import label_set, mnist_loader
 DATASET_TEMPORARY_DIR = "/tmp/kmmkp-dataset-sketching"
 DATASET_LOCATION = "./sketch"
 SKETCHING_TIME_LOCATION = f"{RESULTS_DIR}/sketching-time.json"
+
 
 def compress(xs, ys, target_size):
     """
@@ -47,7 +47,8 @@ def compress(xs, ys, target_size):
 
     # Create the new training set by joining the buckets, labeling the data
     xs_km = torch.cat([c for _, c in centers.values()])
-    ys_km = torch.cat([torch.empty(centers_amount).fill_(label) for centers_amount, label in zip(bucket_sizes, label_set)])
+    ys_km = torch.cat(
+        [torch.empty(centers_amount).fill_(label) for centers_amount, label in zip(bucket_sizes, label_set)])
 
     # Shuffle everything
     permutation = torch.randperm(xs_km.shape[0], device=DEVICE)
@@ -89,7 +90,7 @@ def compress_dataset():
 
     print("Loading original MNIST dataset")
 
-    (x_train, y_train), (x_test, y_test) = mnist_loader(TRAINING_SET_SIZE, TEST_SET_SIZE)
+    (x_train, y_train), (_, _) = mnist_loader(TRAINING_SET_SIZE, TEST_SET_SIZE)
 
     print("Sketching dataset using K-means")
 

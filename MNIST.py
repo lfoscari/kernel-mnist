@@ -1,4 +1,4 @@
-from torchvision.transforms import ToTensor, Compose, Lambda, RandomCrop, Normalize, RandomRotation
+from torchvision.transforms import ToTensor, Compose, Lambda
 from torch.utils.data import DataLoader
 from torchvision import datasets
 
@@ -17,8 +17,8 @@ def mnist_loader(training_batch_size, test_batch_size):
         download=True,
         transform=Compose([
             ToTensor(),
-            Lambda(lambda x: x.reshape((-1, )))
-            ])
+            Lambda(lambda x: x.reshape((-1,)))
+        ])
     )
 
     test_data = datasets.MNIST(
@@ -27,7 +27,7 @@ def mnist_loader(training_batch_size, test_batch_size):
         download=True,
         transform=Compose([
             ToTensor(),
-            Lambda(lambda x: x.reshape((-1, ))),
+            Lambda(lambda x: x.reshape((-1,))),
         ])
     )
 

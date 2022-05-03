@@ -15,6 +15,7 @@ from HyperparameterTuning import tune
 
 RESULTS_LOCATION = f"{RESULTS_DIR}/kernel-perceptron-results.json"
 
+
 def run_tests():
     """
     Run the kernel perceptron implementation on the MNIST dataset using the sketched data-points, measure training
@@ -23,7 +24,7 @@ def run_tests():
 
     print("Loading dataset...")
 
-    (x_train, y_train), (x_test, y_test) = mnist_loader(TRAINING_SET_SIZE, TEST_SET_SIZE)
+    (_, _), (x_test, y_test) = mnist_loader(TRAINING_SET_SIZE, TEST_SET_SIZE)
 
     print(f"Running Multi-label Kernel Perceptron with k-means sketching on MNIST dataset")
 
@@ -35,9 +36,9 @@ def run_tests():
             y_train_km = torch.load(f"{DATASET_LOCATION}/{reduction}/y_train_km.pt", map_location=DEVICE)
 
             progress.set_description(f"Tuning hyperparameters with reduction {reduction} and {approach} approach")
-            
+
             tuning_time = time.time()
-            epochs, degree = tune(x_train, y_train, reduction, approach)
+            epochs, degree = tune(x_train_km, y_train_km, reduction, approach)
             tuning_time = time.time() - tuning_time
 
             progress.set_description(f"Evaluating test error with reduction {reduction} and {approach} approach")
@@ -70,6 +71,7 @@ def run_tests():
             progress.update(1)
 
     json.dump(results, open(RESULTS_LOCATION, "w"), indent=2)
+
 
 if __name__ == "__main__":
     torch.manual_seed(SEED)
