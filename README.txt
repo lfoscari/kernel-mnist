@@ -6,6 +6,10 @@ running the following commands inside the cloned repository:
 $ nix-shell
 & python3 experiments.py
 
+When writing new tests or experimenting is imperative to set the seed for
+the RNG in PyTorch, because otherwise the model will be scrambled.
+Simply add the instruction torch.manual_seed(~~~).
+
 In the 'full' directory is possible to run a modified version of the
 algorithm on the whole MNIST dataset, technically also the version
 contained in MultilabelKernelPerceptron.py should work, but computes the
@@ -18,6 +22,3 @@ requires a hefty amount of memory available (roughly +4GB of free RAM), as this
 step is fully reproducible, the results can already be found inside the
 'sketch' directory, if you wish to rerun the pre-processing just delete the
 folder and run the experiments.py executable.
-
-Thanks to the kmeans-pytorch library is possible to run achieve a k-means
-approximation of the dataset using a CUDA-compatible GPU.
