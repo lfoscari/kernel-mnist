@@ -52,7 +52,6 @@ let myPythonPackages =
 	    # Perceptron
 		pytorch
 		torchvision
-		# kmeans
         keops
 
 		# Visualisation

@@ -10,6 +10,10 @@ When writing new tests or experimenting is imperative to set the seed for the
 RNG in PyTorch, because otherwise the model will be scrambled. Simply add the
 instruction torch.manual_seed(~~~).
 
+Inside utils.py is possible to define the number and size of reductions and the
+range of epochs and kernel degree. By default only the reduction to 200 examples
+is used.
+
 In the 'full' directory is possible to run a modified version of the algorithm
 on the whole MNIST dataset, technically also the version contained in
 MultilabelKernelPerceptron.py should work, but computes the kernel matrix before

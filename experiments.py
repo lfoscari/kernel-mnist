@@ -60,7 +60,7 @@ def run_tests():
             test_error = perceptron.error(x_test, y_test)
 
             results[reduction][approach] = {
-                "training_error_km": training_error_km,
+                "training_error": training_error_km,
                 "test_error": test_error,
                 "epochs": epochs,
                 "degree": degree,
