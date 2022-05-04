@@ -3,6 +3,7 @@ from functools import partial
 from tqdm import tqdm
 import shutil
 import time
+import json
 import os
 
 import sys
@@ -10,13 +11,9 @@ import sys
 sys.path.append("../")
 
 from MultilabelKernelPerceptron import MultilabelKernelPerceptron
+from experiments import RESULTS_LOCATION
 from MNIST import label_set, mnist_loader
 from utils import *
-
-EPOCHS = 5
-DEGREE = 2
-APPROACH = "last"
-MODEL_LOCATION = f"models/{APPROACH}.pt"
 
 KERNEL_MATRIX_TEMPORARY_DIR = "/tmp/kmmp-kernelmatrix"
 KERNEL_MATRIX_DIR = "kernelmatrix"
@@ -63,7 +60,10 @@ class MultilabelKernelPerceptronDisk(MultilabelKernelPerceptron):
         return float(torch.sum(predictions != ys) / ys.shape[0])
 
 
-def matrix(x_train):
+def matrix(x_train, tuning_degree):
+    if not os.path.exists(model_location):
+        shutil.rmtree(KERNEL_MATRIX_DIR)
+
     if os.path.exists(KERNEL_MATRIX_DIR):
         print("Kernel matrix already computed... skipping")
         return
@@ -72,24 +72,24 @@ def matrix(x_train):
 
     print(f"Computing kernel matrix...")
     for index, example in tqdm(enumerate(x_train)):
-        kernel_row = polynomial(example, x_train.T, degree=DEGREE)
+        kernel_row = polynomial(example, x_train.T, degree=tuning_degree)
         torch.save(kernel_row, f"{KERNEL_MATRIX_TEMPORARY_DIR}/{index}.pt")
 
     shutil.move(KERNEL_MATRIX_TEMPORARY_DIR, KERNEL_MATRIX_DIR)
 
 
-def train(x_train, y_train):
-    if os.path.exists(MODEL_LOCATION):
+def train(x_train, y_train, tuning_epochs, approach, tuning_degree, model_location):
+    if os.path.exists(model_location):
         print("Model already fitted... skipping")
-        return torch.load(MODEL_LOCATION)
+        return torch.load(model_location)
 
     perceptron = MultilabelKernelPerceptronDisk(
-        partial(polynomial, degree=DEGREE),
+        partial(polynomial, degree=tuning_degree),
         label_set,
-        EPOCHS,
+        tuning_epochs,
         x_train,
         y_train,
-        APPROACH,
+        approach,
         DEVICE
     )
 
@@ -100,20 +100,20 @@ def train(x_train, y_train):
 
     print("Training time:", time.time() - training_time)
 
-    torch.save(perceptron.model, MODEL_LOCATION)
+    torch.save(perceptron.model, model_location)
     return perceptron.model
 
 
-def error(model, x_train, y_train, x_test, y_test):
+def error(model, x_train, y_train, x_test, y_test, approach, tuning_epochs, tuning_degree):
     print("Computing test error...")
 
     perceptron = MultilabelKernelPerceptronDisk(
-        partial(polynomial, degree=DEGREE),
+        partial(polynomial, degree=tuning_degree),
         label_set,
-        EPOCHS,
+        tuning_epochs,
         x_train,
         y_train,
-        "last",
+        approach,
         DEVICE
     )
 
@@ -121,12 +121,25 @@ def error(model, x_train, y_train, x_test, y_test):
     print("Test error:", perceptron.error(x_test, y_test))
 
 
+def main():
+    (x_train, y_train), (x_test, y_test) = mnist_loader(TRAINING_SET_SIZE, TEST_SET_SIZE)
+    results = json.load(open(RESULTS_LOCATION))
+
+    for approach in APPROACHES:
+        epochs = results["5000"][approach]["epochs"]
+        degree = results["5000"][approach]["degree"]
+
+        model_location = f"models/{approach}.pt"
+
+        print(f"[{approach}]")
+
+        matrix(x_train, degree)
+        model = train(x_train, y_train, approach, epochs, degree, model_location)
+        error(model, x_train, y_train, x_test, y_test, approach, epochs, degree)
+
+        print("\n")
+
+
 if __name__ == "__main__":
     torch.manual_seed(SEED)
-    (x_train, y_train), (x_test, y_test) = mnist_loader(TRAINING_SET_SIZE, TEST_SET_SIZE)
-
-    print(f"[{APPROACH}]")
-
-    matrix(x_train)
-    model = train(x_train, y_train)
-    error(model, x_train, y_train, x_test, y_test)
+    main()
