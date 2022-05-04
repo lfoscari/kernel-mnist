@@ -1,4 +1,4 @@
-from kmeans_pytorch import kmeans
+from pykeops.torch import LazyTensor
 import shutil
 import json
 import time
@@ -10,6 +10,41 @@ from MNIST import label_set, mnist_loader
 DATASET_TEMPORARY_DIR = "/tmp/kmmkp-dataset-sketching"
 DATASET_LOCATION = "./sketch"
 SKETCHING_TIME_LOCATION = f"{RESULTS_DIR}/sketching-time.json"
+
+
+def kmeans(x, k=10, iterations=10, verbose=True):
+    """
+    k-means using Lloyd's algorithm for the Euclidean metric.
+    Implementation by kernel-operations.io
+    """
+
+    N, D = x.shape  # Number of samples, dimension of the ambient space
+
+    c = x[:k, :].clone()  # Simplistic initialization for the centroids
+
+    x_i = LazyTensor(x.view(N, 1, D))  # (N, 1, D) samples
+    c_j = LazyTensor(c.view(1, k, D))  # (1, K, D) centroids
+
+    # K-means loop:
+    # - x  is the (N, D) point cloud,
+    # - cl is the (N,) vector of class labels
+    # - c  is the (K, D) cloud of cluster centroids
+    for i in range(iterations):
+
+        # E step: assign points to the closest cluster -------------------------
+        D_ij = ((x_i - c_j) ** 2).sum(-1)  # (N, K) symbolic squared distances
+        cl = D_ij.argmin(dim=1).long().view(-1)  # Points -> Nearest cluster
+
+        # M step: update the centroids to the normalized cluster average: ------
+        # Compute the sum of points per cluster:
+        c.zero_()
+        c.scatter_add_(0, cl[:, None].repeat(1, D), x)
+
+        # Divide by the number of points per cluster:
+        Ncl = torch.bincount(cl, minlength=k).type_as(c).view(k, 1)
+        c /= Ncl  # in-place division to compute the average
+
+    return cl, c
 
 
 def compress(xs, ys, target_size):
@@ -40,7 +75,7 @@ def compress(xs, ys, target_size):
         #   L' = L * N' / N
         # Pick at least 2 centers for cluster for good measure.
         centers_amount = max(2, bucket.shape[0] * target_size // xs.shape[0])
-        centers[label] = kmeans(bucket, centers_amount, device=DEVICE, seed=SEED, tqdm_flag=False)
+        centers[label] = kmeans(bucket, k=centers_amount)
         bucket_sizes.append(centers_amount)
 
     # Create the new training set by joining the buckets, labeling the data

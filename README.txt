@@ -16,9 +16,3 @@ MultilabelKernelPerceptron.py should work, but computes the kernel matrix before
 starting the training; in the case of the full MNIST dataset this matrix
 occupies 28.8GB, the modified version saves the matrix on the disk and not in
 memory.
-
-Note: the algorithm requires a pre-processing step to be completed, which
-requires a hefty amount of memory available (roughly +4GB of free RAM), as this
-step is fully reproducible, the results can already be found inside the 'sketch'
-directory, if you wish to rerun the pre-processing just delete the folder and
-run the experiments.py executable.

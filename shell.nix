@@ -1,5 +1,28 @@
 with import <nixpkgs> {};
 
+let keopscore =
+	python39.pkgs.buildPythonPackage rec {
+		pname = "keopscore";
+		version = "2.0";
+		src = python39.pkgs.fetchPypi {
+			inherit pname version;
+			sha256 = "sha256-lgTkYfhQuH/HWXAYyMfGDOLjOEXURPoxYVnvlmOw3Ms=";
+		};
+		doCheck = false;
+	}; in
+
+let keops =
+	python39.pkgs.buildPythonPackage rec {
+		pname = "pykeops";
+		version = "2.0";
+		src = python39.pkgs.fetchPypi {
+			inherit pname version;
+			sha256 = "sha256-J2amB8LfRf3rtxcVP9jvpCliUdCBq91Po/q+ZwjVkls=";
+		};
+		propagatedBuildInputs = [ keopscore python39.pkgs.numpy python39.pkgs.pytorch python39.pkgs.pybind11 ];
+		doCheck = false;
+	}; in
+
 let tikzplotlib =
 	python39.pkgs.buildPythonPackage rec {
         pname = "tikzplotlib";
@@ -24,37 +47,13 @@ let tikzplotlib =
         doCheck = false;
 	}; in
 
-let kmeans =
-	python39.pkgs.buildPythonPackage rec {
-        pname = "kmeans_pytorch";
-        version = "f7f36bd1cb4e3a761d73d584866d0a9c6b4d2805";
-        format = "pyproject";
-
-        src = fetchFromGitHub {
-            owner = "subhadarship";
-            repo = pname;
-            rev = "f7f36bd1cb4e3a761d73d584866d0a9c6b4d2805";
-            sha256 = "sha256-WQ1t52qkcTODIhDUJKu0A0hcfDh0YPJ8AVwrzxbFwfI=";
-        };
-
-        propagatedBuildInputs = with python39.pkgs; [
-            matplotlib
-            numpy
-            pillow
-            webcolors
-            flit-core
-            numba
-        ];
-
-        doCheck = false;
-	}; in
-
 let myPythonPackages =
 	python39.withPackages (p: with p; [
 	    # Perceptron
 		pytorch
 		torchvision
-		kmeans
+		# kmeans
+        keops
 
 		# Visualisation
 		jupyter

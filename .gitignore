@@ -2,6 +2,7 @@
 data
 visualization/output
 visualization/data
+sketch
 
 # JetBrains
 .idea
