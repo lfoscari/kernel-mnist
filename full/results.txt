@@ -1,52 +1,9 @@
 [min]
-Kernel matrix already computed... skipping
+Computing kernel matrix with degree 3...
+60000it [18:57, 52.77it/s]
 Training the perceptron on the full MNIST dataset
-Training time: 4620.9443795681
+Training time: 8688.393989086151
 Computing test error...
-10000it [03:18, 50.31it/s]
-Test error: 0.018799999728798866
+10000it [03:14, 51.31it/s]
+Test error: 0.016499999910593033
 
-real	80m26.946s
-user	178m7.379s
-sys	5m35.771s
-
-
-[mean]
-Computing kernel matrix...
-60000it [19:26, 51.43it/s]
-Training the perceptron on the full MNIST dataset
-Training time: 6469.73440861702
-Computing test error...
-10000it [03:20, 49.97it/s]
-Test error: 0.016100000590085983
-
-real	130m43.401s
-user	441m2.483s
-sys	12m11.940s
-
-
-[weight]
-Computing kernel matrix...
-60000it [19:11, 52.13it/s]
-Training the perceptron on the full MNIST dataset
-Training time: 5044.7081089019775
-Computing test error...
-10000it [03:16, 50.82it/s]
-Test error: 0.018699999898672104
-
-real	110m43.787s
-user	363m23.256s
-sys	11m18.709s
-
-
-[last]
-Kernel matrix already computed... skipping
-Training the perceptron on the full MNIST dataset
-Training time: 6291.055382013321
-Computing test error...
-10000it [03:14, 51.44it/s]
-Test error: 0.027499999850988388
-
-real   108m16.860s
-user   353m13.167s
-sys    11m13.163s

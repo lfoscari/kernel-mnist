@@ -80,7 +80,7 @@ class MultilabelKernelPerceptron:
                 alpha[index] += alpha_update
                 alpha_sum += alpha
 
-        alpha_mean = alpha_sum / (self.epochs * kernel_matrix.shape[0])
+        alpha_mean = alpha_sum / (self.epochs * self.xs.shape[0])
 
         return alpha_mean
 
