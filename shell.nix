@@ -1,4 +1,4 @@
-with import <nixpkgs> {};
+with import <nixos-21.11> {};
 
 let keopscore =
 	python39.pkgs.buildPythonPackage rec {
