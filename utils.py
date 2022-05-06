@@ -15,7 +15,7 @@ TEST_SET_SIZE = 10_000
 EPOCHS = range(1, 11)
 DEGREES = range(1, 7)
 
-REDUCTIONS = [200, 1000, 5000]
+REDUCTIONS = [200] #, 1000, 5000]
 APPROACHES = ["min", "mean", "weight", "last"]
 
 RESULTS_DIR = "./results"

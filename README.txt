@@ -15,8 +15,4 @@ range of epochs and kernel degree. By default only the reduction to 200 examples
 is used.
 
 In the 'full' directory is possible to run a modified version of the algorithm
-on the whole MNIST dataset, technically also the version contained in
-MultilabelKernelPerceptron.py should work, but computes the kernel matrix before
-starting the training; in the case of the full MNIST dataset this matrix
-occupies 28.8GB, the modified version saves the matrix on the disk and not in
-memory.
+on the whole MNIST dataset.
