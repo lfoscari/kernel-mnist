@@ -142,7 +142,7 @@ def main():
 		model = train(x_train, y_train, approach, epochs, degree, model_location)
 		error(model, x_train, y_train, x_test, y_test, approach, epochs, degree)
 
-		print("\n")
+		print()
 
 
 if __name__ == "__main__":

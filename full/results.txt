@@ -7,3 +7,27 @@ Computing test error...
 10000it [03:14, 51.31it/s]
 Test error: 0.016499999910593033
 
+[mean]
+Kernel degree is unchanged
+Training the perceptron on the full MNIST dataset
+Training time: 12059.866312265396
+Computing test error...
+10000it [03:24, 48.89it/s]
+Test error: 0.016100000590085983
+
+[last]
+Kernel degree is unchanged
+Training the perceptron on the full MNIST dataset
+Training time: 7870.279407262802
+Computing test error...
+10000it [03:23, 49.25it/s]
+Test error: 0.019099999219179153
+
+[weight]
+Computing kernel matrix with degree 2...
+60000it [19:11, 52.13it/s]
+Training the perceptron on the full MNIST dataset
+Training time: 5044.7081089019775
+Computing test error...
+10000it [03:16, 50.82it/s]
+Test error: 0.016599999898672104

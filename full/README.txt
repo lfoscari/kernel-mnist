@@ -3,7 +3,7 @@ perceptorn algorithm proposed in MultilabelKernelPerceptron on the full MNIST
 dataset. The execution takes quite a lot of time, roughly 4/5 hours.
 
 Inside the file is possible to tweak the variables to save the results elsewhere
-or change the order in which the approaches are tested, this to avoid having to
+or change the order in which the approaches are tested to avoid having to
 compute the kernel matrix more times than it's necessary.
 
 To achieve a good accuracy the optimal polynomial degree and epochs are
