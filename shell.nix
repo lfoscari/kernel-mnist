@@ -1,4 +1,7 @@
-with import <nixos-21.11> {};
+{ pkgs ? import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/aa2f845096f72dde4ad0c168eeec387cbd2eae04.tar.gz") {}
+}:
+
+with pkgs;
 
 let keopscore =
 	python39.pkgs.buildPythonPackage rec {

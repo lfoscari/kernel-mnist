@@ -16,10 +16,3 @@ is used.
 
 In the 'full' directory is possible to run a modified version of the algorithm
 on the whole MNIST dataset.
-
-Note:
-The project has been tested on the nix channel 21.11, in case it is not active
-on your machine run the following commands:
-
-$ nix-channel --add https://nixos.org/channels/nixos-21.11
-$ nix-channel --update
